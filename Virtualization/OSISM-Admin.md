@@ -157,6 +157,7 @@ When using `manaage.py`, be careful to limit it to the domains that you want to 
 it defaults to affecting all, which may be an unwelcome surprise.
 
 Amongst the things that OpenStack project manager supports are:
+
 * Creating a new domain with an initial project in it
 * Creating a new user in that domain with member rights in the project
 * Assigning quota to a project (in terms of templates or multiples of the values)

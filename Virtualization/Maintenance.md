@@ -154,7 +154,7 @@ DELETE FROM `volumes` WHERE deleted = 1 and deleted_at < "2025-05-01 00:00:00";
 ### More OpenStack maintenance hints
 * The [Keystone](https://docs.scs.community/docs/iaas/guides/operations-guide/openstack/keystone/) docs
   may be used as a reminder how to find out users with `member` access to a project.
-* See [Upstream eutron QoS Settings](https://docs.openstack.org/neutron/latest/admin/config-qos.html)
+* See [Upstream Neutron QoS Settings](https://docs.openstack.org/neutron/latest/admin/config-qos.html)
   documentation how to control the usage of network bandwidth in your infrastructure.
 
 ### OpenStack Resource Manager
