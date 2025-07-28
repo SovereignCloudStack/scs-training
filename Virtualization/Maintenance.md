@@ -18,10 +18,12 @@
 # Getting 100 old deleted serversi (the `tr -d` is for CiaB container extra CR)
 DELETED=$(openstack server list --all --deleted -c ID -f value | tr -d '\r')
 ```
-* Is it recommended to use `nova-manage` to move out old entries to shadow tables (for later deletion)
+* You can use `nova-manage` to move out old entries to shadow tables (for later deletion)
     - See <https://docs.openstack.org/nova/2024.2/cli/nova-manage.html>
+* Nova maintenance is covered in the [Nova](https://docs.scs.community/docs/iaas/guides/operations-guide/openstack/nova)
+  section of the [OpenStack Operations Guide](https://docs.scs.community/docs/iaas/guides/operations-guide/openstack/)
 
-#### Example: Delete deleted servers directly in the database (up till Apr 30 23:59:59 UTC)
+#### Example: Manually remove deleted servers directly in the database (up till Apr 30 23:59:59 UTC)
 ```sql
 USE nova;
 DELETE iae FROM `instance_actions_events` AS iae, `instance_actions` AS ia, `instances` AS inst
@@ -41,19 +43,22 @@ DELETE FROM `instance_extra` WHERE deleted_at IS NOT null AND deleted_at < "2025
 DELETE FROM `virtual_interfaces` where deleted_at IS NOT null AND deleted_at < "2025-05-01 00:00:00";
 DELETE FROM `instances` WHERE deleted_at IS NOT null AND deleted_at < "2025-05-01 00:00:00";
 ```
-Seasoned SQL admins will surely find more efficient ways to do this with joins and the like.
+Seasoned SQL admins may find more efficient ways to do this with joins and the like.
 More tables might have foreign key references to the `instances` table, so you might add more `DELETE` statements.
+Ideally, you can rely on `nova-manage` instead.
 
 
 #### Cinder Volumes
 * Like Nova, cinder only marks volumes as deleted in the database and records the deletion time, but does
 not remove the table entries.
 * The openstack CLI does not report them at all, no `--deleted` option.
-
-* It is recommended to use the `cinder-manage` tool
+* You can use the `cinder-manage` tool
     - See <https://docs.openstack.org/cinder/2024.2/cli/cinder-manage.html>
+* Cinder maintenance is described in the [Cinder](https://docs.scs.community/docs/iaas/guides/operations-guide/openstack/cinder)
+  section of the OpenStack Operations Guide. It also has hints on quota management
+  and QoS policies.
 
-* Database example (emergency)
+* Database example (for illustration, only use in case of emergency)
 ```sql
 USE cinder;
 DELETE FROM `volume_attachment` WHERE deleted = 1 and deleted_at < "2025-05-01 00:00:00";
@@ -61,7 +66,8 @@ DELETE FROM `volume_glance_metadata` WHERE deleted = 1 and deleted_at < "2025-05
 DELETE FROM `volumes` WHERE deleted = 1 and deleted_at < "2025-05-01 00:00:00";
 ```
 * Similar for snapshots and backups.
-* Glance behaves similar, although deleted images do not tend to emerge in huge numbers.
+* Preferably you don't need this as `cinder-manage` does the job.
+* Glance behaves similarly, although deleted images do not tend to emerge in huge numbers.
 
 #### Learning
 * You need to do regular DB maintenance work with `nova-manage` and `cinder-manage`
@@ -98,6 +104,8 @@ DELETE FROM `volumes` WHERE deleted = 1 and deleted_at < "2025-05-01 00:00:00";
     - See <https://github.com/osism/issues/issues/959>
     - Automated occasional (nightly) restarts of the `octavia_api` container will help to avoid customer impact
         * Alternatively you monitor the FD count or the `octavia_api` availability and restart when the problem approaches / arises
+* There is [documentation on Octavia maintenance](https://docs.scs.community/docs/iaas/guides/operations-guide/openstack/octavia)
+  on how to deal with missing database entries.
 
 ### RabbitMQ issues
 * If your rabbitMQ process is starved of resources, it might fail to deliver all messages
@@ -143,11 +151,29 @@ DELETE FROM `volumes` WHERE deleted = 1 and deleted_at < "2025-05-01 00:00:00";
     - Shut it down (`openstack server stop`) and wait for it to be in `SHUTDOWN` state.
     - On a Cloud-in-a-Box, you can use `/usr/local/bin/shutdown-instances.sh` to force-stop all VMs
 
+### More OpenStack maintenance hints
+* The [Keystone](https://docs.scs.community/docs/iaas/guides/operations-guide/openstack/keystone/) docs
+  may be used as a reminder how to find out users with `member` access to a project.
+* See [Upstream eutron QoS Settings](https://docs.openstack.org/neutron/latest/admin/config-qos.html)
+  documentation how to control the usage of network bandwidth in your infrastructure.
+
+### OpenStack Resource Manager
+Some of the repeating cleanup work has been automated in OSISM's
+[OpenStack Resource Manager](https://github.com/osism/openstack-resource-manager).
+A short [documentation](https://osism.tech/docs/guides/operations-guide/openstack/tools/resource-manager/)
+is available.
+
+In particular it has tooling for:
+* Host evacuation and live migration
+* Amphorae rotation
+* Detecting and cleaning up stuck cinder volumes
+* Identifying orphaned resources, i.e. resources that belong to projects which no longer exist
+
 ### Troubleshooting Guide
 There is a [Troubleshooting Guide](https://docs.scs.community/docs/iaas/guides/troubleshooting-guide/)
-available in the [SCS IaaS docs](https://docs.scs.community/docs/iaas/) with information on
-trouble with the Manager, OpenStack database, Ceph connection and cinder rabbit trouble and
-Ceph medium errors.
+available in the [SCS IaaS docs](https://docs.scs.community/docs/iaas/guides/operations-guide/openstack/tools/resource-manager)
+with information on trouble with the Manager, OpenStack database, Ceph connection and cinder
+rabbit trouble and Ceph medium errors.
 
 ### Practical assignment
 * Trainer will create volumes that are attached to already gone VMs or stuck in reserved.
