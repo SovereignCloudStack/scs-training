@@ -430,6 +430,8 @@ See also <https://docs.scs.community/docs/iaas/guides/concept-guide/bom>
 * RefStack is the framework used by (former) OpenStack InterOp Working Group to run the
   InterOp Guideline tests. In general, you can use it to run sets of Tempest tests.
     - Tempest is the test framework and test case collection from OpenStack
+    - Note that RefStack is no longer maintained well upstream; you may need to
+      set up rally manually instead.
 * SCS Compliance test
     - Check whether you fulfill the SCS-compatible IaaS tests (currently version 5.1):
         * Check out <https://github.com/SovereignCloudStack/standards> and go to `standards/Tests/`
@@ -443,7 +445,7 @@ See also <https://docs.scs.community/docs/iaas/guides/concept-guide/bom>
   #  cloud "test" defined in clouds/secure.yaml
   ./scs-compliance-check.py scs-compatible-iaas.yaml --subject=CiaB-KG7 -a os_cloud=test
   ```
-* OpenStack Health Monitor
+* OpenStack Health Monitor (OSHM)
     - Will cover this later
     - Running one iteration manually is a good scenario test for the core functionality
       (Catalog, Router, Networks, Subnets, Floating IPs, Security Groups, Images, Block Storage,
@@ -451,6 +453,9 @@ See also <https://docs.scs.community/docs/iaas/guides/concept-guide/bom>
        of other services.
     - You should get a run without any error or timeout -- i.e. no red color.
     - Same comment as for SCS Compliance test: Run this with normal project `member` privileges, not as admin
+* In case you don't want to set up permanent OSHM monitoring anyway, you may find the
+  [Simple Stress](https://docs.scs.community/docs/iaas/guides/operations-guide/openstack/tools/simple-stress)
+  tool easier to use.
 
 ### The OSISM tool
 
