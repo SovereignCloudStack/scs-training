@@ -223,6 +223,20 @@ clouds:
     - This is not very popular and SCS standards do not require this functionality to be present
     - Many workloads that would benefit from autoscaling are containerized and use the Kubernetes mechanisms for autoscaling
 
+#### Client tooling
+* There are numerous [openstack SDKs](https://wiki.openstack.org/wiki/SDKs) available.
+    - The [Python openstackSDK](https://docs.openstack.org/openstacksdk/latest/) is well maintained and the standard way to programmatically interact with openStack APIs.
+    - The command line tools [openstackclient CLI](https://docs.openstack.org/python-openstackclient/latest/) are derived from the python SDK
+    - Both are available as distro packages on most Linux distros or can be installed via `pip` (e.g. in a `venv`).
+* Scripting with the python CLI tools is not ideal -- the repeated startup cost (python loading libraries ...) and the new authentication on each invocation lead to slow performance.
+    - Using python directly to automate is much better.
+    - Or use terraform, ansible, ...
+* An interesting project creates openAPI specs for the APIs and generates rust clients:
+    * On <https://github.com/gtema/openstack/>
+    * openAPI specs derived from the implementation match real behavior
+        - Not all services are covered completely yet, but it's pretty good for the OpenStack core services
+    * The rust CLI client `osc` has amazing performance and a high level of consistency
+    * There is a `k9s`-like terminal user interface `ostui` which is nice for inspection
 
 ### Security incidents (provider perspective)
 * As public cloud provider, beware that you will have people sign up for your cloud with stolen credit card data
