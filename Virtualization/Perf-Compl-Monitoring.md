@@ -66,14 +66,18 @@ Live real-time monitoring.
     - Use 30d or 6m for long-time trends
     - You can zoom in with the mouse
 * Describing what you view:
-    - Above the panels: Selecting cloud and filtering per resource, per service, ...
-    - First row: Gauges with errors and error rates
+    - Above the panels: Selecting cloud and filtering per resource, per service, ...  
+      ![OSHM filtering](OSHM-1-Header.png)
+    - First row: Gauges with errors and error rates  
+      ![OSHM Summary Gauges](OSHM-2-Summary.png)
         * You should achieve 99.9% or better here
         * An occasional API error (2 per day or so) is not something to worry about
-    - Second through fourth row: Errors
+    - Second through fourth row: Errors  
+      ![OSHM Error Stats](OSHM-3-Error-Stats.png)
         * This is the timeline for various kinds of errors
         * Ideally, it's all zero
-    - Fifth through seventh row: Performance
+    - Fifth through seventh row: Performance  
+      ![OSHM Performance Stats](OSHM-4-Performance.png)
         * API performance, Resource wait times, Benchmark results
         * Resource waits: Some API calls (e.g. VM creation) return as soon as the parameters
           have been validated and the cloud start provisioning the resource. It can take
