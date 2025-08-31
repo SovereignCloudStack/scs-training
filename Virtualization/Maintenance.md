@@ -164,6 +164,7 @@ A short [documentation](https://osism.tech/docs/guides/operations-guide/openstac
 is available.
 
 In particular it has tooling for:
+
 * Host evacuation and live migration
 * Amphorae rotation
 * Detecting and cleaning up stuck cinder volumes
