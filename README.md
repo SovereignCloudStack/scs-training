@@ -65,8 +65,8 @@ terms again (the SA), so we hope that freely sharing will not lead to
 abuse. Please report any copyright violation to the ITU and <s7n@garloff.de>.
 
 ## PDF
-The `Makefile` allows you to build a nicely formatted PDF using PanDoc.
-Find it also on SCS' nextcloud.
+The `Makefile` allows you to build a nicely formatted PDF using PanDoc
+and LuaLaTeX. Find it also on SCS' nextcloud.
 
 ## Table of Contents
 ### [Introduction](Introduction/)

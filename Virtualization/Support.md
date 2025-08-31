@@ -36,8 +36,7 @@
         * This means all ports inside the group can freely communicate with each other (thus the name group)
     - Behind the scenes, when referring to a remote security group, the IP addresses belonging to that group are whitelisted
         * This is secure due to port security, which means that network ports cannot spoof their source IP address
-            - When using non-private fixed IP address ranges, external traffic might reach your VM without being subject to port security rules, so take extra care not to allow such traffic in if you really have to work with non-private IPs.
-                * Private IP addresses here really refers to the non-routable IPv4 netorks 192.168/16, 172.16/12 and 10/8 networks.
+            - When using non-private fixed IP address ranges, external traffic might reach your VM without being subject to port security rules, so take extra care not to allow such traffic in if you really have to work with non-private IPs. (Private IP addresses here really refer to the non-routable IPv4 networks 192.168/16, 172.16/12 and 10/8 networks.)
             - Port security can be disabled per port, if you want to e.g. create VMs that do advanced networking things such as NAT
             - Be aware that such ports can then circumvent security group rules by spoofing their source IP address
         * This also means that adding a port to a security group that's referenced by this or by another security group can mean updating a lot of network filtering rules
