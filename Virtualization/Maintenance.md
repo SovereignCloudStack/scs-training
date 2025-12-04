@@ -151,6 +151,35 @@ DELETE FROM `volumes` WHERE deleted = 1 and deleted_at < "2025-05-01 00:00:00";
     - Shut it down (`openstack server stop`) and wait for it to be in `SHUTDOWN` state.
     - On a Cloud-in-a-Box, you can use `/usr/local/bin/shutdown-instances.sh` to force-stop all VMs
 
+### Recovering from unclean shutdowns (continued)
+* Beyond the ceph locks, you might find containers not coming up after a surprise shutdown.
+* Use `docker ps --all | grep '\(Exited\|unhealthy\|starting\)'` to see which containers are not
+  running as they should. (The `starting` state is of course OK for some minutes after restart.)
+* Typically a `docker restart containerID` won't help, bu trying does not hurt.
+* `docker logs containerID` might give you a first idea what's wrong.
+* This can be done on the manager host but also on the other hosts.
+* Please be aware that this repair work is a deviation from normal operations and should be done
+  with extra care, oversight (4 eyes), back-ups. Consider to save state instead and rebuild affected
+  hosts cleanly.
+
+
+### Recovery of redis store
+* For redis containers, your issue might be that the last written record to the aof file got corrupted.
+* To fix, you can backup the aof file and then use `redis-check-aof --fix` on the redis store.
+* To do so, you need to identify the data volume that holds the data by using `docker inspect`.
+* Then do something like
+
+  ```bash
+  docker run -it --entrypoint /bin/sh -v /var/lib/docker/volumes/netbox_redis/_data:/data redis:7.4.1-alpine
+  cd /data/appendonlydir
+  cp -p appendonly.aof.13.incr.aof appendonly.aof.13.incr.aof.bak
+  redis-check-aof appendonly.aof.13.incr.aof
+  redis-check-aof --fix appendonly.aof.13.incr.aof
+  exit
+  ```
+
+  Please adjust this to the specific container based on the `docker inspect` output.
+
 ### More OpenStack maintenance hints
 * The [Keystone](https://docs.scs.community/docs/iaas/guides/operations-guide/openstack/keystone/) docs
   may be used as a reminder how to find out users with `member` access to a project.
