@@ -99,7 +99,7 @@ interfaces to control these.
     * Unscoped
     * Domain scope
     * Project scope
-* Identity service hosts the service catalogue
+* Identity service hosts the service catalog
 
 #### Keystone: Raw REST API example (against CiaB)
 * Discovery (`--cacert ...` needed b/c of self-signed certificate)
@@ -430,7 +430,7 @@ OpenStack requires queuing and a database to work
 
 ### Assignments Virtualization Architecture
 
-#### Service catalogue (CiaB)
+#### Service catalog (CiaB)
 * Retrieve it using openstack CLI tooling (alternatively: python SDK)
     - What services do you see?
     - Why are there several endpoints per service?

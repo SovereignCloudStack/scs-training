@@ -263,7 +263,7 @@ See also <https://docs.scs.community/docs/iaas/guides/concept-guide/bom>
 * Add requirements up when combining roles in not fully decomposed setups
 * Smaller setups will work
     - If you carefully design QoS settings to avoid starvation
-    - If uou avoid too high load
+    - If you avoid too high load
     - This adds complexity and the engineering time and operational trouble tends to be more
       expensive than the saved hardware cost, at least for production / production-like systems
 

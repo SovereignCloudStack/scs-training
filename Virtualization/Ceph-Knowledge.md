@@ -29,7 +29,7 @@
 * OSDs keep the data by writing them to local storage and by replicating them to other OSDs
     - Several options exist for local storage, preferred format is bluestore nowadays
     - Can separate data from metadata drives, the latter being more important for performance
-    - OSDs are aware of their neighbours and report failures to contact them to mons
+    - OSDs are aware of their neighbors and report failures to contact them to mons
 * Data is sorted into *pools*
     - Pools can have their individual replication strategy, scrubbing policy etc.
     - A pool has a set of *placement groups* associated with it
