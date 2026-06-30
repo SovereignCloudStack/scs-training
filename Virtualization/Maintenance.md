@@ -155,7 +155,7 @@ DELETE FROM `volumes` WHERE deleted = 1 and deleted_at < "2025-05-01 00:00:00";
 * Beyond the ceph locks, you might find containers not coming up after a surprise shutdown.
 * Use `docker ps --all | grep '\(Exited\|unhealthy\|starting\)'` to see which containers are not
   running as they should. (The `starting` state is of course OK for some minutes after restart.)
-* Typically a `docker restart containerID` won't help, bu trying does not hurt.
+* Typically a `docker restart containerID` won't help, but trying does not hurt.
 * `docker logs containerID` might give you a first idea what's wrong.
 * This can be done on the manager host but also on the other hosts.
 * Please be aware that this repair work is a deviation from normal operations and should be done
