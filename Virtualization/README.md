@@ -46,6 +46,9 @@
     * Bootstrap and install manager
     * Study the OSISM tool on the manager
 
+## [GPU flavors](OSISM-GPU.md)
+
+
 ## [Basic ceph knowledge](Ceph-Knowledge.md)
 * [Ceph architecture and terminology](Ceph-Knowledge.md#introduction-to-ceph)
     * OSDs, Mon, BlueStore, PGs, Pools, Crush map
