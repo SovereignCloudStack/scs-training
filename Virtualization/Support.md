@@ -217,7 +217,7 @@ clouds:
 * Horizontal scaling (using more VMs to work in parallel) is typically easy to do with stateless VMs
 * Vertical scaling (creating larger VMs) is supported by OpenStack
     - You can hot(un)plug disks and network ports into running VMs
-    - Changing the number of vCPUs or the amour of memory requires a VM resize operation
+    - Changing the number of vCPUs or the amount of memory requires a VM resize operation
         * This causes a reboot of the VM
         * Don't forget to confirm the resize after the rebooted VM has been checked
 * Autoscaling (horizontal scaling) in OpenStack can be done via [heat](https://wiki.openstack.org/wiki/Heat/AutoScaling) orchestration templates
@@ -226,7 +226,7 @@ clouds:
 
 #### Client tooling
 * There are numerous [openstack SDKs](https://wiki.openstack.org/wiki/SDKs) available.
-    - The [Python openstackSDK](https://docs.openstack.org/openstacksdk/latest/) is well maintained and the standard way to programmatically interact with openStack APIs.
+    - The [Python openstackSDK](https://docs.openstack.org/openstacksdk/latest/) is well maintained and the standard way to programmatically interact with OpenStack APIs.
     - The command line tools [openstackclient CLI](https://docs.openstack.org/python-openstackclient/latest/) are derived from the python SDK
     - Both are available as distro packages on most Linux distros or can be installed via `pip` (e.g. in a `venv`).
 * Scripting with the python CLI tools is not ideal -- the repeated startup cost (python loading libraries ...) and the new authentication on each invocation lead to slow performance.
