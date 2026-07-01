@@ -81,6 +81,14 @@
 * SCS flavors: `SCS-16V-64-GNa-84-48` is a SCS compute flavor with
   16vCPUs, 64GiB RAM with a PCI-Pass-Through instance Nvidia
   Ampere with 84 Streaming Multiprocessors and 48GB of video memory
-  (this is an Nvidia A40).
+  (this example uses an Nvidia A40).
+
+#### OpenStack / OSISM implementation
+* Prevent host system from attaching GPU driver
+* Create host aggregates for comput hosts
+* Create flavors using the PCI devices
+* Optional (not recommended): Images requiring flavor specs
 
 
+#### Containers
+* Use worker nodes with GPUs
