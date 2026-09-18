@@ -36,7 +36,7 @@
     - Ensure enough capacity when parallelizing the reboot process
     - Ensure proper error handling when host evacuation fails
     - Announcing this to customers beforehand (as a time of higher risk / lower performance) will be appreciated
-* See the hints how to take out and evacuate a compute node in the [operations guide](https://docs.scs.community/docs/iaas/guides/operations-guide/node/package-upgrades)
+* See the hints how to take out and evacuate a compute node in the [operations guide](https://osism.tech/docs/guides/operations-guide/node/package-upgrades)
 
 ### Version upgrades
 * The SCS reference implementation has a new release twice a year (to follow upstream OpenStack releases)
@@ -45,7 +45,7 @@
 * It is highly advisable to test this within test and reference environments
 * Downloading all new container images (`osism apply -a pull`) prior to deploying them will reduce the downtime.
 * The process will typically involve live-migrations and a reboot for each node
-* There is an [Upgrade Guide](https://docs.scs.community/docs/iaas/guides/upgrade-guide/) that you should
+* There is an [Upgrade Guide](https://osism.tech/docs/guides/upgrade-guide/) that you should
   read and study. The below information is just to provide an overview.
     - If you are upgrading to a new OSISM release, please also read the version-specific release notes.
 * Typical sequence:

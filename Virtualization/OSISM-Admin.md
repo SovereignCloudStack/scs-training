@@ -152,7 +152,7 @@ Image was converted to raw to allow for Copy-on-Write usage with ceph
 The is a [Project Manager](https://github.com/osism/openstack-project-manager) tool,
 which can be used to create domains, projects, users default networks and manage quota.
 It may be used as part of the onboarding workflow for new users.
-It is [well documented](https://docs.scs.community/docs/iaas/guides/operations-guide/openstack/tools/project-manager).
+It is [well documented](https://osism.tech/docs/guides/operations-guide/openstack/tools/project-manager).
 When using `manaage.py`, be careful to limit it to the domains that you want to affect;
 it defaults to affecting all, which may be an unwelcome surprise.
 
