@@ -212,6 +212,11 @@
 * Kernel sysctl settings: Typically suitable out of the box in OSISM deployment
 * Defaults for PGs are set for a small cluster. Enable autoscaler for pools or increase manually for larger clusters (10+ OSDs)
 * There are also hints how to setup WAL and DB if those are not co-located on the same NVMe anyway
+* Enable async (1 thread) discard for all ssd/nvme type OSDs to reduce wear (and performance degradation).
+```shell
+ceph config set osd/class:ssd bdev_enable_discard true
+ceph config set osd/class:ssd bdev_async_discard_threads 1
+```
 
 ### Planning hardware for Ceph
 
@@ -228,6 +233,7 @@
       lower performance. Create a pool with fast solid-state storage for fast volume storage then. (You can have several.)
     - Some flash devices promise better performance when using 4k instead of (default) 512B sectors; you need to reformat
       them if you want to use this (losing all data on them!), see <https://docs.scs.community/docs/iaas/guides/operations-guide/ceph/#check-format-of-a-nvme-device>
+    - You can create erasure-coded pools for slower storage, but it's not recommended for block storage.
 * Invest into Enterprise SSD/NVMe
     - 5y @ 3 DWPD rating recommended when exposed as high performance block storage
     - Power Loss Protection allows safe write caching (required by SCS flavor spec for local storage)
