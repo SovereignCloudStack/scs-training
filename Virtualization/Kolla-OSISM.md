@@ -396,6 +396,66 @@ Beware of assymmetric routing issues for multi-homed Linux machines!
     - The provider net north-south traffic is not routed by the kernel's routing tables, so this one does not conflict. (Your hosts won't even have IP addresses on that network, only gateway and VMs do.)
 * ... or you use ExtApi as your default route (so software downloads go via it), and set up static routes for anything internal (DNS, NT) and use wireguard for all admin access to api-int and manager services.
 
+
+Example network config with a secondary routing table (149):
+```yaml
+# inventory/group_vars/compute/network.yaml
+network_vlans:
+  bond0.148:    # Control/Management network
+	id: 148     # VLAN ID
+    link: bond0 # Underlaying network interface
+	mtu: 9000	# Allow for Jumbo packets internally (Ctrl)
+    addresses:
+      - "10.80.148.{{ 10+node_id }}/24"  # up to ~240 hosts
+    routes:
+      - to: 0.0.0.0/0   # default
+        via: 10.80.148.1
+  bond0.149: # Separate ExtAPI network (we could do without)
+	id: 149
+	link: bond0
+	mtu: 1500	# Just play it safe, as this is for ext
+	addresses:
+	  - "10.80.149.{{10+node_id}}" # Use .8 as VIP for api
+	routes:
+	  - to: 0.0.0.0/0
+	    via: 10.80.149.1        # Gateway for ExtAPI network
+		table: 149
+		#on-link and advertised-mss not really needed
+	routing-policy:
+	  - from: 10.80.149.0/24    # Default from ExtAPI net
+	    to: 0.0.0.0/0           # To the world
+		table: 149              # Use 2ndary routing table
+	  - from: 10.80.149.0/24    # But internal traffic should
+	    to: 10.80.148.0/23      # use the main routing table
+		table: 254              # main
+		priority: 60
+	  - from: 10.80.149.0/23    # On the manager we need to
+	    to: 172.16.0.0/12       # reach the docker containers
+		table: 254              # main
+		priority: 61
+  bond0.150:    # VM2VM network (east-west)
+	id: 150     # VLAN ID
+    link: bond0 # Underlaying network interface
+	mtu: 9000	# Allow for Jumbo packets internally (VM2VM)
+    addresses:
+      - "10.80.150.{{ 10+node_id }}/24"
+	mtu: 9000	# Allow for Jumbo packets internally (VM2VM)
+    # no routing
+  bond0.151:    # External Provider network (north-south)
+	mtu: 9000	# If the gateway handles it, otherwise 1500
+	id: 151
+	link: bond0
+	# No IP addresses assigned to hosts in ExternalProvider
+  # Ceph is on a different network device here,
+  # thus not covered here in the vlans section
+```
+
+Roll out with `osism sync inventory` and `osism apply network`.
+Do a sanity check of the generated `/etc/netplan/01-osism.yaml` to avoid being locked out.
+`osism console --type clush all` with `sudo netplan apply` will render the changes effective.
+(`osism apply facts` will update your facts cache`). Look at routing tables with
+`ip route show table 149` and `ip rule show` for the routing rules.
+
 #### Bootstrapping hardware (BareMetal provisioning) - Manager and all other resource nodes
 * Auto-install images are available from OSISM <https://github.com/osism/node-image>
     - Variants based on disk setup (SCSI/SSD sda vs. NVMe nvme0n1)
