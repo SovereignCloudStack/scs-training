@@ -44,7 +44,7 @@
 * It's not hardened for production and has predefined passwords
 * Performance of VMs will suck unless you have enabled nested virtualization
 * We use it all the time for our CI testing
-* See instructions at <https://docs.scs.community/docs/iaas/deployment-examples/testbed/>
+* See instructions at <https://osism.tech/docs/deployment-examples/testbed/>
 
 #### Cloud-in-a-Box
 * Cloud-in-a-Box is a single node deployment of SCS IaaS
@@ -57,7 +57,7 @@
 * Uses self-signed certificates and predefined passwords.
 * Do not expose this to the internet! Do not ever put valuable data there.
 * Really nice test/development environment
-* See instructions at <https://docs.scs.community/docs/iaas/deployment-examples/cloud-in-a-box/>
+* See instructions at <https://osism.tech/docs/deployment-examples/cloud-in-a-box/>
 
 ### Assignments
 * Review inventory on a testbed setup

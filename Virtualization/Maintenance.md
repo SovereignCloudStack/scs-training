@@ -20,8 +20,8 @@ DELETED=$(openstack server list --all --deleted -c ID -f value | tr -d '\r')
 ```
 * You can use `nova-manage` to move out old entries to shadow tables (for later deletion)
     - See <https://docs.openstack.org/nova/2024.2/cli/nova-manage.html>
-* Nova maintenance is covered in the [Nova](https://docs.scs.community/docs/iaas/guides/operations-guide/openstack/nova)
-  section of the [OpenStack Operations Guide](https://docs.scs.community/docs/iaas/guides/operations-guide/openstack/)
+* Nova maintenance is covered in the [Nova](https://osism.tech/docs/guides/operations-guide/openstack/nova)
+  section of the [OpenStack Operations Guide](https://osism.tech/docs/guides/operations-guide/openstack/)
 
 #### Example: Manually remove deleted servers directly in the database (up till Apr 30 23:59:59 UTC)
 ```sql
@@ -54,7 +54,7 @@ not remove the table entries.
 * The openstack CLI does not report them at all, no `--deleted` option.
 * You can use the `cinder-manage` tool
     - See <https://docs.openstack.org/cinder/2024.2/cli/cinder-manage.html>
-* Cinder maintenance is described in the [Cinder](https://docs.scs.community/docs/iaas/guides/operations-guide/openstack/cinder)
+* Cinder maintenance is described in the [Cinder](https://osism.tech/docs/guides/operations-guide/openstack/cinder)
   section of the OpenStack Operations Guide. It also has hints on quota management
   and QoS policies.
 
@@ -104,14 +104,14 @@ DELETE FROM `volumes` WHERE deleted = 1 and deleted_at < "2025-05-01 00:00:00";
     - See <https://github.com/osism/issues/issues/959>
     - Automated occasional (nightly) restarts of the `octavia_api` container will help to avoid customer impact
         * Alternatively you monitor the FD count or the `octavia_api` availability and restart when the problem approaches / arises
-* There is [documentation on Octavia maintenance](https://docs.scs.community/docs/iaas/guides/operations-guide/openstack/octavia)
+* There is [documentation on Octavia maintenance](https://osism.tech/docs/guides/operations-guide/openstack/octavia)
   on how to deal with missing database entries.
 
 ### RabbitMQ issues
 * If your rabbitMQ process is starved of resources, it might fail to deliver all messages
 * Subscribers can lose connections to rabbitMQ
 * The result is that the backend actions are not taken and while the API services may happily accept requests, the requested actions never make any progress
-* See the [Cinder volume create failure](https://docs.scs.community/docs/iaas/guides/troubleshooting-guide/openstack#cinder-volume-create-failure) guide to see how to detect cinder-rabbit issues.
+* See the [Cinder volume create failure](https://osism.tech/docs/guides/troubleshooting-guide/openstack#cinder-volume-create-failure) guide to see how to detect cinder-rabbit issues.
 <!--TODO: More information here?-->
 
 ### Power loss on storage
@@ -181,7 +181,7 @@ DELETE FROM `volumes` WHERE deleted = 1 and deleted_at < "2025-05-01 00:00:00";
   Please adjust this to the specific container based on the `docker inspect` output.
 
 ### More OpenStack maintenance hints
-* The [Keystone](https://docs.scs.community/docs/iaas/guides/operations-guide/openstack/keystone/) docs
+* The [Keystone](https://osism.tech/docs/guides/operations-guide/openstack/keystone/) docs
   may be used as a reminder how to find out users with `member` access to a project.
 * See [Upstream Neutron QoS Settings](https://docs.openstack.org/neutron/latest/admin/config-qos.html)
   documentation how to control the usage of network bandwidth in your infrastructure.
@@ -200,8 +200,8 @@ In particular it has tooling for:
 * Identifying orphaned resources, i.e. resources that belong to projects which no longer exist
 
 ### Troubleshooting Guide
-There is a [Troubleshooting Guide](https://docs.scs.community/docs/iaas/guides/troubleshooting-guide/)
-available in the [SCS IaaS docs](https://docs.scs.community/docs/iaas/guides/operations-guide/openstack/tools/resource-manager)
+There is a [Troubleshooting Guide](https://osism.tech/docs/guides/troubleshooting-guide/)
+available in the [SCS IaaS docs](https://osism.tech/docs/guides/operations-guide/openstack/tools/resource-manager)
 with information on trouble with the Manager, OpenStack database, Ceph connection and cinder
 rabbit trouble and Ceph medium errors.
 

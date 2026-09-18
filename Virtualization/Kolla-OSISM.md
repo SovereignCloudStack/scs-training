@@ -236,7 +236,7 @@ Reference: <https://osism.tech/docs/concepts/metalbox>
 
 ### Planning hardware
 
-See also <https://docs.scs.community/docs/iaas/guides/concept-guide/bom>
+See also <https://osism.tech/docs/guides/concept-guide/bom>
 
 #### Hyperconverged vs. Fully decomposed
 * We need some nodes to run OSISM
@@ -473,13 +473,13 @@ Do a sanity check of the generated `/etc/netplan/01-osism.yaml` to avoid being l
     - Server sets up some services (mostly in docker containers) in the second phase and shuts down again
     - Server is ready after switching it on the 3rd time
 * You can also manually provision the hardware in case you need to
-  <https://docs.scs.community/docs/iaas/guides/deploy-guide/provisioning>
+  <https://osism.tech/docs/guides/deploy-guide/provisioning>
 
 #### Creating the configuration repository (seed node)
 * This should be prepared on the operators control outside of the cloud
     - A desktop system (preferably Linux, but Mac or WSL work as well) that supports docker
     - A small VM somewhere can be setup if needed; it can be disposed after config repo and manager node are set up
-* Follow the steps on <https://docs.scs.community/docs/iaas/guides/deploy-guide/seed>
+* Follow the steps on <https://osism.tech/docs/guides/deploy-guide/seed>
 * Chose where you want to store your configuration repository
     - Any git server will do, your company's git, your private gitlab, a public github will all do
     - Secrets are stored separately
@@ -491,7 +491,7 @@ Do a sanity check of the generated `/etc/netplan/01-osism.yaml` to avoid being l
     -e TARGET_UID="$(id -u)" -e TARGET_GID="$(id -g)" \
     -v $(pwd)/cookiecutter-output:/output --rm -it quay.io/osism/cookiecutter
 ```
-* Answer the questions from cookiecutter, see <https://docs.scs.community/docs/iaas/guides/configuration-guide/configuration-repository/#creating-a-new-configuration-repository>
+* Answer the questions from cookiecutter, see <https://osism.tech/docs/guides/configuration-guide/configuration-repository/#creating-a-new-configuration-repository>
 * Output is stored in directory `cookiecutter-output/`. Commit and push it to your git.
 
 ####  Secrets handling
@@ -500,11 +500,11 @@ Do a sanity check of the generated `/etc/netplan/01-osism.yaml` to avoid being l
 * `secrets/vaultpass` contains the password for your ansible vault and is stored as a `keepass` file.
     - The *initial* password for the Keepass file is `password`. Change it.
     - Alternatively handle the secrets in another vault of your choice.
-* Makefile targets to get ansible vault secrets, see <https://docs.scs.community/docs/iaas/guides/configuration-guide/configuration-repository/#working-with-encrypted-files>, e.g. `make ansible_vault_show FILE=all`
+* Makefile targets to get ansible vault secrets, see <https://osism.tech/docs/guides/configuration-guide/configuration-repository/#working-with-encrypted-files>, e.g. `make ansible_vault_show FILE=all`
 * Keepass clients exist for many operating systems (incl. Android), there is also a nextcloud app
 
 #### Inventory
-<https://docs.scs.community/docs/iaas/guides/configuration-guide/configuration-repository/#step-4-post-processing-of-the-generated-configuration>
+<https://osism.tech/docs/guides/configuration-guide/configuration-repository/#step-4-post-processing-of-the-generated-configuration>
 
 * Cookiecutter creates node `node01` for your manager. Adjust it to the real name.
     - It is convenient to ensure that DNS resolution works with the used names
@@ -518,7 +518,7 @@ Do a sanity check of the generated `/etc/netplan/01-osism.yaml` to avoid being l
     - You can set `host_vars` in `environments/manager/host_vars/`
 * Global settings: DNS, NTP, .... `environments/configuration.yml`
 * Deploy TLS (SSL) certificates in `environments/kolla/certificates/haproxy.pem` and `haproxy-internal.pem`
-* Parameter reference: <https://docs.scs.community/docs/iaas/guides/configuration-guide/configuration-repository/#parameter-reference>
+* Parameter reference: <https://osism.tech/docs/guides/configuration-guide/configuration-repository/#parameter-reference>
 * Later (on the manager host in `/opt/configuration/`) : Adjust the inventory
     - List the nodes and add them to the roles `[manager]`, `[monitoring]`, `[control]`,
       `[network]`, `[ceph-control]`, `[ceph-resource]`, `[ceph-rgw:children]` in `inventory/20-roles`.
@@ -528,14 +528,14 @@ Do a sanity check of the generated `/etc/netplan/01-osism.yaml` to avoid being l
 * `osism apply configuration` gets the latest status from git (overwrites local changes if any)
 
 #### Manager
-* Setting the operator user: <https://docs.scs.community/docs/iaas/guides/deploy-guide/manager#step-1-create-operator-user>
+* Setting the operator user: <https://osism.tech/docs/guides/deploy-guide/manager#step-1-create-operator-user>
 * Also apply network settings, bootstrap and reboot the manager node
 * Deploy the manager service and set vault password (it's in your keepass vault if you did not move it elsewhere)
 * These steps should work without any errors
 
 #### Nodes
 * Do the bare metal provisioning as described before
-* Make them managed by applying the bootstrap steps <https://docs.scs.community/docs/iaas/guides/deploy-guide/bootstrap>
+* Make them managed by applying the bootstrap steps <https://osism.tech/docs/guides/deploy-guide/bootstrap>
 * All nodes should be reachable (cf. step 6 with `osism apply ping`), resolve any issues prior to proceeding
     - Remember that an ansible ping verifies that ansible can log in via ssh to manage the host
     - This is why the final steps are `osism apply sshconfig` and `osism apply known-hosts`
@@ -544,16 +544,16 @@ Do a sanity check of the generated `/etc/netplan/01-osism.yaml` to avoid being l
 * If you use VLANs, Link aggregation (802.3ad, also called bonding or trunking), you will need to adjust
   your network settings.
 * For Ubuntu hosts (since OSISM 6.1.0), netplan is used,
-  read <https://docs.scs.community/docs/iaas/guides/configuration-guide/network>
+  read <https://osism.tech/docs/guides/configuration-guide/network>
 * If you want to proxy outgoing internet access on the manager node (e.g. for security reasons),
-  read <https://docs.scs.community/docs/iaas/guides/configuration-guide/proxy>
+  read <https://osism.tech/docs/guides/configuration-guide/proxy>
 * Extra hints for the loadbalancer, e.g. TLS/SSL certificate deployment:
-  read <https://docs.scs.community/docs/iaas/guides/configuration-guide/loadbalancer>
+  read <https://osism.tech/docs/guides/configuration-guide/loadbalancer>
     - Note: This is for the loadbalancer(s) in from of the Infra/OpenStack API services, not the
       loadbalancers that cloud users create with the OpenStack octavia service
 
 #### Nodes: Infrastructure, Network, Logging/Monitoring, Ceph, OpenStack
-* <https://docs.scs.community/docs/iaas/guides/deploy-guide/services/>
+* <https://osism.tech/docs/guides/deploy-guide/services/>
   covers this well
 * Maintain the order: infra, network, logging/mon, kubernetes (optional), ceph, OpenStack
 * This can be scripted (and there are scripts e.g. for testbed deployments)
@@ -565,7 +565,7 @@ Do a sanity check of the generated `/etc/netplan/01-osism.yaml` to avoid being l
 #### OpenStack tuning
 * kolla-ansible merges files from `environments/kolla/files/overlays/service/config-subservice.conf`
   into generated configuration.
-* See <https://docs.scs.community/docs/iaas/guides/configuration-guide/openstack/>
+* See <https://osism.tech/docs/guides/configuration-guide/openstack/>
     - E.g. 3x CPU over-subscription assumes that you have HT(SMT) enabled, you might increase to 5x otherwise.
 * It also explains the mechanism how config file templating works and how these are rolled out with
   the ansible playbooks (example: OpenSearch)
@@ -656,7 +656,7 @@ smaller blocks.
 
 #### Visual inspection
 * For an overview of dashboards look at CiaB or testbed documentation
-  at <https://docs.scs.community/docs/iaas/guides/configuration-guide/openstack/>
+  at <https://osism.tech/docs/guides/configuration-guide/openstack/>
 * The most important ones are linked from Homer at: <https://homer.services.YOURCLOUDDOMAIN/>
     - Homer should work and link roughly s dozen further dashboards
 * Check whether Ceph is healthy
@@ -699,7 +699,7 @@ smaller blocks.
     - You should get a run without any error or timeout -- i.e. no red color.
     - Same comment as for SCS Compliance test: Run this with normal project `member` privileges, not as admin
 * In case you don't want to set up permanent OSHM monitoring anyway, you may find the
-  [Simple Stress](https://docs.scs.community/docs/iaas/guides/operations-guide/openstack/tools/simple-stress)
+  [Simple Stress](https://osism.tech/docs/guides/operations-guide/openstack/tools/simple-stress)
   tool easier to use.
 
 ### The OSISM tool
@@ -746,7 +746,7 @@ smaller blocks.
           require customer communication or approval from your security team
         * Same procedure: push to repo and use the above osism commands
 * Read recommendations how to work with git branches
-  <https://docs.scs.community/docs/iaas/guides/configuration-guide/manager#working-with-git-branches>
+  <https://osism.tech/docs/guides/configuration-guide/manager#working-with-git-branches>
 * Review is good, testing is better
     - Take reviews seriously!
         * Be mindful of hierarchies or cultural habits that e.g. prevent questioning higher ranked people

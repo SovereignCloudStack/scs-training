@@ -98,7 +98,7 @@
 * [Stuck Loadalancers](Maintenance.md#stuck-loadbalancers)
 * [Stuck RabbitMQ](Maintenance.md#rabbitmq-issues)
 * [Power loss on storage](Maintenance.md#power-loss-on-storage)
-* [Troubleshooting Guide](https://docs.scs.community/docs/iaas/guides/troubleshooting-guide/)
+* [Troubleshooting Guide](https://osism.tech/docs/guides/troubleshooting-guide/)
 * [Practical assignment](Maintenance.md#practical-assignment)
     * Recover from hang volume
 

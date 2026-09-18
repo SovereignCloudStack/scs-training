@@ -449,7 +449,7 @@ OpenStack requires queuing and a database to work
     - Explain line by line
 
 #### Digression: Setting up or using a CiaB for testing
-<https://docs.scs.community/docs/iaas/deployment-examples/testbed/>
+<https://osism.tech/docs/deployment-examples/testbed/>
 
 * A Cloud-in-a-Box (CiaB) is an SCS setup for a single node
     - Can be deployed on bare metal (wipes your disk!) or in a VM
@@ -475,6 +475,6 @@ OpenStack requires queuing and a database to work
 <!--
 #### Kenya training
 * Connect to GL-AXT1800, RXD9H2FTKY
-* Get your individual(!) config from <https://docs.scs.community/docs/iaas/deployment-examples/testbed/>
+* Get your individual(!) config from <https://osism.tech/docs/deployment-examples/testbed/>
 * SSH connection is possible as well: `ssh -p 8022 dragon@192.168.9.1`
 -->
