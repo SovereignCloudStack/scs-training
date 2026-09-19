@@ -97,8 +97,7 @@ without partitioning (MIG/SR-IOV) and the rest of this chapter assumes pci pass-
   please see the [tables](https://docs.scs.community/standards/scs-0100-w1-flavor-naming-implementation-testing#gpu-table)
   in the implementation notes for it.
 * So we need to first determine the correct name for the flavors with
-  GPU support, the [flavor name generator](https://sovereigncloudstack.org/flavors/) can help with it.
-  <!--TODO: Fix link-->
+  GPU support, the [flavor name generator](https://flavors.scs.community/) can help with it.
 <!-- TODO: Add flavor registration -->
 
 ## Doing it all via the configuration repository
