@@ -2,8 +2,8 @@
 
 ### OSISM manager management tools
 
-See [Testbed Guide](https://docs.scs.community/docs/iaas/deployment-examples/testbed/usage)
-or [Ciab Guide](https://docs.scs.community/docs/iaas/deployment-examples/cloud-in-a-box/#webinterfaces)
+See [Testbed Guide](https://osism.tech/docs/deployment-examples/testbed/usage)
+or [Ciab Guide](https://osism.tech/docs/deployment-examples/cloud-in-a-box/#webinterfaces)
 for a list of web-interfaces to manage your infrastructure.
 
 #### Homer
