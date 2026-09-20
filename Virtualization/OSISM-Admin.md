@@ -80,11 +80,20 @@ options:
                         Path to the directory containing all image files or path to single image file
 ```
 
-#### Available images (as of 2025-05)
-- Debian 12, Debian 11
-- Ubuntu 24.04, Ubuntu 22.04, Ubuntu 22.04 Minimal
-- Rocky 9, AlmaLinux 9, CentOS Stream 9
-- openSUSE Leap 15.6
+Use `--latest --hide` to update all images after having updated the image definitions with
+`contrib/update.py`. The code comes from <https://github.com/osism/openstack-image-manager/>.
+
+It may be more flexible to deploy the openstack-image-manager on a normal Linux system of
+an operator. In particular, the `contrib/update.py` script can write directly to the used
+image definitions, so you don't need to inject them into via `docker cp` into the `manager-openstack-1`
+container on the manager.
+
+
+#### Available images (as of 2026-08)
+- Debian 13, Debian 12, Debian 11
+- Ubuntu 26.04, Ubuntu 24.04, Ubuntu 22.04, (and Minimal variants)
+- Rocky 10, Rocky 9, AlmaLinux 10, AlmaLinux 9, CentOS Stream 9
+- openSUSE Leap 16.0, 15.6
 - Cirros 0.6.3, Cirros 0.6.2
 
 #### Example
