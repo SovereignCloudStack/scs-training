@@ -17,6 +17,13 @@
     - Download new containers: `osism apply -a pull nova -l compute`
         * In this particular case after manually changing the wanted tag for the nova compute container in `environments/kolla/images.yml` in the configuration repository
     - Restart the containers: `osism apply -a refresh-containers nova -l compute`
+* Canonical place for Security Announcements: <https://osism.tech/docs/appendix/security/>
+    - Typically, deploying security updates means downloading and refreshing containers.
+    - You can pull without deploying to minimize downtime `osism apply -a pull $ROLE`
+    - Typically, restarting control plane containers takes the respective API down for some seconds,
+      though this may be hidden to users due to the clustered setups.
+    - It's still best practice to announce these updates, so customers are aware of the fixes taking
+      place and be more attentive to application errors.
 
 ### Rebooting systems
 * Sometimes, hardware needs to be shut down and rebooted
