@@ -36,7 +36,10 @@
     * HCI vs. decomposed
     * Optional Seed node
 * [Bootstrapping the manager](Kolla-OSISM.md#osism-installation-workflow)
-    * Performing the other installation steps
+* [OpenStack tuning](Kolla-OSISM.md#openstack-tuning)
+    * Storage tuning (ceph)
+    * Reserving resources for your hosts
+    * Scheduler tuning
 * [Validating the results](Kolla-OSISM.md#validating-that-the-installed-environment-works)
     * ARA
     * Smoke tests

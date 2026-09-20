@@ -560,15 +560,16 @@ Do a sanity check of the generated `/etc/netplan/01-osism.yaml` to avoid being l
     - If you use your own script, ensure you do *not* ignore errors
     - `set -e` is a must in shell scripts
 * For Ceph, the deployment with ceph-ansible is still the default, this will change to
-  ceph rook in the future. Ensure you have kubernetes/k3 set up
+  cephadm (or ceph rook) in the future. Ensure you have kubernetes/k3 set up for ceph rook.
 
-#### OpenStack tuning
+### OpenStack tuning
 * kolla-ansible merges files from `environments/kolla/files/overlays/service/config-subservice.conf`
   into generated configuration.
 * See <https://osism.tech/docs/guides/configuration-guide/openstack/>
     - E.g. 3x CPU over-subscription assumes that you have HT(SMT) enabled, you might increase to 5x otherwise.
 * It also explains the mechanism how config file templating works and how these are rolled out with
   the ansible playbooks (example: OpenSearch)
+* Reserve cores and memory
 * The service-specific hints mostly link the upstream OpenStack docu
 * The Commons and Services chapters have kolla and OSISM specific information
 
@@ -638,8 +639,6 @@ space and drastically reduces the time until booting of a created instance
 starts. Writes to the disk however cause a read-modify-write cycle with
 the `rbd_chunk_size`. Using 4MB (compared to the 8MB defaults) does so on
 smaller blocks.
-
-
 
 ### Validating that the installed environment works
 
