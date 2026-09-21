@@ -27,7 +27,7 @@ Overview:
     - Looks like bare metal again to the VM drivers.
     - nVidia calls this Multi-Instance-Graphics (MIG), only supported
       on some models, may require additional licensing fees.
-    - Supported AMD models use normal SR-IOV mecahnisms.
+    - Supported AMD models use normal SR-IOV mechanisms.
     - Some people call this GPU virtualization, which is misleading.
 * GPU virtualization
     - GPU is handled by a driver on the host.
@@ -57,7 +57,7 @@ partitioning (MIG/SR-IOV) and the rest of this chapter assumes PCI-Pass-Through.
   `vfio-pci.ids=10de:1b81,10de:10f0` (replace this with the real PCI IDs
   from `lspci -nn`. Note that modern GPUs may consist of several PCI devices,
   e.g. an audio device along with the graphics device. It is least confusing
-  to VM drivers if the deives are passed-through together, so reserve them
+  to VM drivers if the devices are passed-through together, so reserve them
   all.
     - You can unbind a driver at runtime by invoking the right unbind
       command in sysfs, so this can be done without rebooting (unlike
@@ -236,5 +236,5 @@ partitioning (MIG/SR-IOV) and the rest of this chapter assumes PCI-Pass-Through.
 * `openstack resource provider list`
   `for host in ...; do openstack resource provider $host show ; done`
 * Start VM using the flavor.
-* `lspci -k` should show the GPU and a driver attached to it.
+* `lspci -k` should show the GPU and the driver attached to it.
 
