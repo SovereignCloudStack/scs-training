@@ -74,6 +74,13 @@
     * Register public images
     * Onboard a new user (in her own domain)
 
+## [Adding GPU support to virtual machines](Virt-GPU-Support.md)
+* [GPU virtualization vs. pass-through](Virt-GPU-Support.md#virtualized-versus-pci-pass-through)
+* [Host preparation](Virt-GPU-Support.md#host-hypervisor-preparation)
+* [Host aggregates](Virt-GPU-Support.md#host-aggregates-with-gpus)
+* [Flavor registration](Virt-GPU-Support.md#flavor-registration)
+* [Config repository](Virt-GPU-Support.md#doing-it-all-via-the-configuration-repository)
+
 ## [Performance and Compliance monitoring](Perf-Compl-Monitoring.md)
 * [Netbox, prometheus, Netdata, OpenSearch](Perf-Compl-Monitoring.md#osism-manager-management-tools)
 * [OpenStack Health Monitor](Perf-Compl-Monitoring.md#openstack-health-monitor-oshm)
