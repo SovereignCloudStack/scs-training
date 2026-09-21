@@ -122,7 +122,7 @@ partitioning (MIG/SR-IOV) and the rest of this chapter assumes PCI-Pass-Through.
   ```
 
 ## Doing it all via the configuration repository
-* Create a group in inventory (`ivnentory/20-roles`)
+* Create a group in inventory (`inventory/20-roles`)
   ```ini
   [nividia-a10-nodes]
   nvnode01
