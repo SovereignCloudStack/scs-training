@@ -78,8 +78,8 @@
 * [GPU virtualization vs. pass-through](Virt-GPU-Support.md#virtualized-versus-pci-pass-through)
 * [Host preparation](Virt-GPU-Support.md#host-hypervisor-preparation)
 * [Host aggregates](Virt-GPU-Support.md#host-aggregates-with-gpus)
-* [Flavor registration]((Virt-GPU-Support.md#flavor-registration)
-* [Config repository]((Virt-GPU-Support.md#doing-it-all-via-the-configuration-repository)
+* [Flavor registration](Virt-GPU-Support.md#flavor-registration)
+* [Config repository](Virt-GPU-Support.md#doing-it-all-via-the-configuration-repository)
 
 ## [Performance and Compliance monitoring](Perf-Compl-Monitoring.md)
 * [Netbox, prometheus, Netdata, OpenSearch](Perf-Compl-Monitoring.md#osism-manager-management-tools)
