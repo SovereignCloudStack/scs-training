@@ -116,9 +116,9 @@ partitioning (MIG/SR-IOV) and the rest of this chapter assumes PCI-Pass-Through.
   GPU support, the [flavor name generator](https://flavors.scs.community/) can help with it.
 * Register flavors with the GPUs:
   ```shell
-  openstack flavor create --ram 16384 --vcpus 4 SCS-4V-16_GNa-72-24
-  openstack flavor set --property pci_passthrough:alias=nvidia_a10:1 SCS-4V-16_GNa-72-24
-  openstack flavor set --property aggregate_instance_extra_specs:gpu_model=nvidia_a10 SCS-4V-16_GNa-72-24
+  openstack flavor create --ram 32768 --vcpus 8 SCS-8V-32_GNa-72-24
+  openstack flavor set --property pci_passthrough:alias=nvidia_a10:1 SCS-8V-32_GNa-72-24
+  openstack flavor set --property aggregate_instance_extra_specs:gpu_model=nvidia_a10 SCS-8V-32_GNa-72-24
   ```
 
 ## Doing it all via the configuration repository
@@ -129,12 +129,108 @@ partitioning (MIG/SR-IOV) and the rest of this chapter assumes PCI-Pass-Through.
   nvnode02
   ```
   You can now specify `hosts: nvidia-a10-nodes` in playbooks to run tasks there.
-* Now create tasks that roll out kernel command line changes
-  <!--TODO-->
-* Host aggregate registration
-  <!--TODO-->
-* Flavor creation
-  <!--TODO-->
+* Here's the playbook to prepare the hosts:
+```yaml
+---
+- name: Prepare Compute Nodes for GPU Passthrough
+  hosts: nvidia-a10-nodes
+  become: true
+  vars:
+    # Change to 'amd_iommu=on' if using AMD CPUs
+    iommu_param: "intel_iommu=on iommu=pt"
+    pci_alias_config: |
+      [pci]
+      alias = nvidia_a10:1,10de:2236,10de:228b
+
+  tasks:
+    - name: Update GRUB command line for IOMMU
+      lineinfile:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT='
+        line: 'GRUB_CMDLINE_LINUX_DEFAULT="{{ iommu_param }} %s"'
+        backrefs: yes
+      register: grub_updated
+
+    - name: Regenerate GRUB configuration
+      command: update-grub
+      when: grub_updated.changed
+
+    - name: Create Kolla directory for nova config
+      file:
+        path: /etc/kolla/nova-compute/
+        state: directory
+        mode: '0755'
+
+    - name: Inject PCI alias into Kolla nova.conf
+      blockinfile:
+        path: /etc/kolla/nova-compute/nova.conf
+        block: "{{ pci_alias_config }}"
+        create: yes
+        mode: '0644'
+      register: kolla_config_updated
+
+    - name: Reboot node to apply kernel changes
+      reboot:
+        msg: "Rebooting to apply IOMMU kernel parameters"
+      when: grub_updated.changed or kolla_config_updated.changed
+
+    - name: Final Note
+      debug:
+        msg: "Nodes are ready. Please run 'kolla-ansible -i inventory reconfigure' to apply nova changes."
+```
+* Host aggregate registration and flavor creation
+```yaml
+---
+- name: Configure OpenStack GPU Resources
+  hosts: localhost
+  connection: local
+  become: false
+  vars:
+    # Configuration Variables
+    aggregate_name: "nvidia-a10-nodes"
+    aggregate_metadata:
+      gpu_model: "nvidia_a10"
+
+    flavor_name: "SCS-8V-32_GNa-72-24"
+    flavor_ram: 32768
+    flavor_vcpus: 8
+
+    pci_alias: "nvidia_a10:1"
+    aggregate_spec: "aggregate_instance_extra_specs:gpu_model=nvidia_a10"
+
+  tasks:
+    - name: Create Host Aggregate
+      openstack.cloud.os_host_aggregate:
+        name: "{{ aggregate_name }}"
+        state: present
+
+    - name: Set Metadata on Host Aggregate
+      openstack.cloud.os_host_aggregate_metadata:
+        name: "{{ aggregate_name }}"
+        metadata: "{{ aggregate_metadata }}"
+        state: present
+
+    - name: Create GPU Flavor
+      openstack.cloud.os_flavor:
+        name: "{{ flavor_name }}"
+        ram: "{{ flavor_ram }}"
+        vcpus: "{{ flavor_vcpus }}"
+        state: present
+
+    - name: Add PCI Passthrough Extra Spec to Flavor
+      openstack.cloud.os_flavor_extra_specs:
+        name: "{{ flavor_name }}"
+        key: "pci_passthrough:alias"
+        value: "{{ pci_alias }}"
+        state: present
+
+    - name: Add Aggregate Requirement Extra Spec to Flavor
+      openstack.cloud.os_flavor_extra_specs:
+        name: "{{ flavor_name }}"
+        key: "{{ aggregate_spec }}"
+        value: "true" # This matches the 'true' logic in the key presence
+        state: present
+```
 
 ## Validation and testing
 * `openstack resource provider list`
