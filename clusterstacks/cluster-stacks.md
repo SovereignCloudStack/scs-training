@@ -539,14 +539,14 @@ per cluster in 07-cluster-secret.sh.)
     topology:
       variables: # <-- variables can be set here
         - name: controller_flavor
-          value: "SCS-4V-8-20"
+          value: "SCS-2V-4-20s"
         - name: worker_flavor
-          value: "SCS-4V-8-20"
+          value: "SCS-4V-16-50"
         - name: external_id
           value: "ebfe5546-f09f-4f42-ab54-094e457d42ec"
       class: openstack-alpha-1-29-v2
       controlPlane:
-        replicas: 2
+        replicas: 3
       version: v1.29.3
       workers:
         machineDeployments:
@@ -557,6 +557,16 @@ per cluster in 07-cluster-secret.sh.)
   ```
 
 For more details, see available variables [table](https://docs.scs.community/docs/container/components/cluster-stacks/components/cluster-stacks/providers/openstack/configuration#available-variables)
+
+### Finding out about Cluster-Stack releases from SCS
+
+The published versions are stored in the [SCS registry](https://registry.scs.community/) in the `kaas/cluster-stacks`
+project.
+You can access it anonymously using tools like `oras`. To see available versions, use
+`oras repo tags registry.scs.community/kaas/cluster-stacks`.
+
+You can pull a version using `oras pull registry.scs.community/kaas/cluster-stacks:openstack-scs2-1-35-v1 -o openstack-scs2-1-35-v1`
+where the target directory (`openstack-scs2-1-35-v1`) should already exist and will hold the bundle that constitutes the cluster stack. Investigate by looking at `metadata.yaml` and other files.
 
 ### Assignments
 
