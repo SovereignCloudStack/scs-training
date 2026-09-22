@@ -2,6 +2,7 @@
 
 ## Course Overview
 This course provides an introduction to SCS Monitoring, a scalable, highly available monitoring stack based on Prometheus, Thanos, Grafana and Loki. The course contains brief overview of used technologies as well as examples and demonstrations using KinD.
+Note that the SCS Monitoring project is now maintained and evolved in the ALASCA ARKO project.
 
 ## Introduction
 - Course goals
@@ -446,4 +447,4 @@ dnation-kubernetes-monitoring:
 ### Resources
 * [SCS Monitoring Documentation](https://docs.scs.community/docs/operating-scs/components/monitoring/docs/overview)
 * [dNation Kubernetes Monitoring](https://dnationcloud.github.io/kubernetes-monitoring/)
-
+* [ALASCA ARKO](https://alasca.cloud/projects/arko/)

@@ -1,4 +1,4 @@
-# SCS Monitoring
+# SCS Monitoring (arko)
 
 ## Table of Contents
 1. [Course overview](monitoring.md#course-overview)
