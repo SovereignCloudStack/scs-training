@@ -558,6 +558,16 @@ per cluster in 07-cluster-secret.sh.)
 
 For more details, see available variables [table](https://docs.scs.community/docs/container/components/cluster-stacks/components/cluster-stacks/providers/openstack/configuration#available-variables)
 
+### Finding out about Cluster-Stack releases from SCS
+
+The published versions are stored in the [SCS registry](https://registry.scs.community/) in the `kaas/cluster-stacks`
+project.
+You can access it anonymously using tools like `oras`. To see available versions, use
+`oras repo tags registry.scs.community/kaas/cluster-stacks`.
+
+You can pull a version using `oras pull registry.scs.community/kaas/cluster-stacks:openstack-scs2-1-35-v1 -o openstack-scs2-1-35-v1`
+where the target directory (`openstack-scs2-1-35-v1`) should already exist and will hold the bundle that constitutes the cluster stack. Investigate by looking at `metadata.yaml` and other files.
+
 ### Assignments
 
 1. Use environment variables to set own registry from [Quickstart guide assignments](#quickstart-guide---docker-infrastructure)
