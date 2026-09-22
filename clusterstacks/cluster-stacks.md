@@ -539,14 +539,14 @@ per cluster in 07-cluster-secret.sh.)
     topology:
       variables: # <-- variables can be set here
         - name: controller_flavor
-          value: "SCS-4V-8-20"
+          value: "SCS-2V-4-20s"
         - name: worker_flavor
-          value: "SCS-4V-8-20"
+          value: "SCS-4V-16-50"
         - name: external_id
           value: "ebfe5546-f09f-4f42-ab54-094e457d42ec"
       class: openstack-alpha-1-29-v2
       controlPlane:
-        replicas: 2
+        replicas: 3
       version: v1.29.3
       workers:
         machineDeployments:
