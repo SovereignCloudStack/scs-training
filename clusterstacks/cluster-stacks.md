@@ -575,6 +575,38 @@ where the target directory (`openstack-scs2-1-35-v1`) should already exist and w
 2. Push needed images
 3. Create a workload cluster using own registry as a source
 
+## GPU support in Cluster-Stacks
+
+This assumes you have an OpenStack cloud that has GPU capabilities and has
+flavors with GPU support such as `SCS-8V-32_GNa-72-24`. (This examples is a
+flavor with 8vCPUs, 32GiB of RAM and a pass-through nVidia Ampere with 72
+Streaming Multiprocessors and 24GiB of VRAM -- an nVidia A10.)
+
+You need node images that have the GPU drivers installed.
+This can be done by using the generic node images and injecting additioal
+software during the worker node deployment or by building specialized
+images. Please get in touch with the SCS team.
+
+You also need a device plugin that reports the GPU capabilities to the
+kubernetes control plane, for nVidia, this is the
+[NVIDIA Device Plugin](https://github.com/NVIDIA/k8s-device-plugin). The
+nodes now have custom properties that get reported via `kubectl describe node <nodename>`.
+
+The workload can now request GPU resources
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gpu-workload
+spec:
+  containers:
+  - name: cuda-container
+    image: nvidia/cuda:12.0-base
+    resources:
+      limits:
+        nvidia.com/gpu: 1 # This tells K8s to schedule this pod on a node with an available GPU
+```
+
 ## Building your own Cluster Stacks
 
 This section describes how to develop your own Cluster stack release from scratch.

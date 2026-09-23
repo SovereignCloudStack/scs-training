@@ -21,7 +21,7 @@ Note:
 Note:
 - We use several essential tools to work with ClusterStacks:
 - KinD (Kubernetes in Docker) creates local Kubernetes clusters inside Docker containers
-  - Perfect for a management cluster that runs the Cluster API controllers
+  - Perfect to bootstrap a management cluster that runs the Cluster API controllers
   - Allows for lightweight, isolated testing and development
 - clusterctl is the primary CLI for Cluster API
   - Initializes providers in the management cluster
