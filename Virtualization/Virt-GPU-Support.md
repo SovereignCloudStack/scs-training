@@ -1,13 +1,14 @@
-# Adding flavors with GPU support to SCS OpenStack (OSISM)
+## Adding flavors with GPU support to SCS OpenStack (OSISM)
 
 Overview:
+
 * Modes: Pass-through vs. virtualized GPUs
 * Ensure correct host configuration (driver)
 * Host aggregates
 * Flavors
 * Automation via OSISM configuration
 
-## Virtualized versus PCI pass-through
+### Virtualized versus PCI pass-through
 
 * Linux/KVM can give direct access to PCIe hardware to VMs
   (PCI-Pass-Through).
@@ -42,7 +43,7 @@ Overview:
 __We recommend using the hardware pass-through mechanism, with or without
 partitioning (MIG/SR-IOV) and the rest of this chapter assumes PCI-Pass-Through.__
 
-## Host (Hypervisor) preparation
+### Host (Hypervisor) preparation
 * Ensure the IOMMU is enabled in the BIOS.
     - Some mainboards need to also enable ACS (Access Control Services) to
       group PCI devices in separate IOMMU DMA domains, so the GPU can be isolated
@@ -84,7 +85,7 @@ partitioning (MIG/SR-IOV) and the rest of this chapter assumes PCI-Pass-Through.
   devices.
 * See below for OpenStack.
 
-## Host aggregates with GPUs
+### Host aggregates with GPUs
 * We'll define flavors which will require a the GPU.
 * The nova-scheduler can be told that certain hosts have certain
   GPU capabilities by adding them to an host aggregate with the appropriate
@@ -105,7 +106,7 @@ partitioning (MIG/SR-IOV) and the rest of this chapter assumes PCI-Pass-Through.
 * The placement service will get usage reports and report it to the nova-scheduler
   for the scheduling decisions.
 
-## Flavor registration
+### Flavor registration
 * The SCS standard has a [naming scheme](https://docs.scs.community/standards/scs-0100-v3-flavor-naming)
   for compute flavors to avoid needless divergence
   of flavor naming causing challenges.
@@ -121,7 +122,7 @@ partitioning (MIG/SR-IOV) and the rest of this chapter assumes PCI-Pass-Through.
   openstack flavor set --property aggregate_instance_extra_specs:gpu_model=nvidia_a10 SCS-8V-32_GNa-72-24
   ```
 
-## Doing it all via the configuration repository
+### Doing it all via the configuration repository
 * Create a group in inventory (`inventory/20-roles`)
   ```ini
   [nividia-a10-nodes]
@@ -232,7 +233,7 @@ partitioning (MIG/SR-IOV) and the rest of this chapter assumes PCI-Pass-Through.
         state: present
 ```
 
-## Validation and testing
+### Validation and testing
 * `openstack resource provider list`
   `for host in ...; do openstack resource provider $host show ; done`
 * Start VM using the flavor.

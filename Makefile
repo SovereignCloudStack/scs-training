@@ -10,9 +10,11 @@ VIRTINPUTS = Virtualization/Front.md \
 	Virtualization/Kolla-OSISM.md \
 	Virtualization/Ceph-Knowledge.md \
 	Virtualization/OSISM-Admin.md \
+	Virtualization/Virt-GPU-Support.md \
 	Virtualization/Perf-Compl-Monitoring.md \
 	Virtualization/Environments.md \
 	Virtualization/Maintenance.md \
+	Virtualization/Crash-Recovery.md \
 	Virtualization/Updates.md \
 	Virtualization/Support.md
 

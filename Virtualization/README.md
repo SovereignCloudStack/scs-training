@@ -112,6 +112,17 @@
 * [Practical assignment](Maintenance.md#practical-assignment)
     * Recover from hang volume
 
+## [Recovering from a power outage](Crash-Recovery.md)
+* [Manager](Crash-Recovery.md#manager)
+* [Ceph](Crash-Recovery.md#verifying-ceph)
+* [Redis](Crash-Recovery.md#redis)
+* [Database](Crash-Recovery.md#database-mariadb)
+* [RabbitMQ](Crash-Recovery.md#queuing-rabbitmq)
+* [OpenStack](Crash-Recovery.md#openstack-services)
+* [VMs](Crash-Recovery.md#vms)
+* [Ceph Locks](Crash-Recovery.md#vms-with-read-only-volumes-ceph-locks)
+* [Resource cleanup](Crash-Recovery.md#stale-openstack-resources)
+
 ## [Updates and Upgrades](Updates.md)
 * [Security advisories and security updates](Updates.md#security-updates)
     * Real-world example
