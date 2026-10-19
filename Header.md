@@ -18,8 +18,8 @@ thanks: |
   OSBA in most countries.
 copyright: ITU
 date: | 
-  v1.5.0  
-  2026-09-23  
+  v1.6.0  
+  2026-10-18
   <br/>   
   ![SCS logo](scs-bw.png){width=200}
 license: CC-BY-SA-4.0
