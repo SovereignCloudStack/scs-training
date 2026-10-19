@@ -291,7 +291,7 @@ providers/
 
 Note: There is the repository [scs-training-kaas-scripts](https://github.com/SovereignCloudStack/scs-training-kaas-scripts)
 with bash scripts that perform the steps in this quick start guide. Ideally, you have a Linux VM
-with some tools installed, use [00-bootstrap-vm-cs.sh](https://github.com/SovereignCloudStack/scs-training-kaas-scripts/blob/main/00-bootstrap-vm-cs.sh) to install tooling.
+with some tools installed, use [00-bootstrap-vm-cs.sh](https://github.com/SovereignCloudStack/scs-training-kaas-scripts/blob/main/00-bootstrap-vm-cs.sh) to install missing tooling on Deb/Ubu VMs.
 
 - Bootstrap a management cluster with KinD ([01-kind-cluster.sh](https://github.com/SovereignCloudStack/scs-training-kaas-scripts/blob/main/01-kind-cluster.sh))
   ```bash
@@ -345,20 +345,22 @@ with some tools installed, use [00-bootstrap-vm-cs.sh](https://github.com/Sovere
   ```bash
   kubectl create namespace cluster
   ```
+  Note: We should have one namespace per customer project (with associated credentials).
 
 - Create cloud secret using csp-helper chart (Note: This is done differently in the scripts, which do not use the
 helm charts; 04-cloud-secret.sh creates the secrets for the CAPO, the workload cluster secrets are created later
 per cluster in 07-cluster-secret.sh.)
 
-  You need to run the csp-helper chart always. You always need to specify the path to your `clouds.yaml`.
+  If you are not using the scripts, you need to run the csp-helper chart. You always need to specify the path to your `clouds.yaml`.
   The `clouds.yaml` should contain also the secrets that you normally split off into `secure.yaml`.
 
-  If you choose to use clouds.yaml with application credentials (`auth_type: v3applicationcredential`), it is the preferred and more secure option.
+  You can choose to use clouds.yaml with application credentials (`auth_type: v3applicationcredential`), it is the preferred and more secure option.
   If you opt to use clouds.yaml with password authentication (`auth_type: v3password`), that is also acceptable, but:
   - Ensure that `project_id` is set, `project_name` works only for CAPO, not for OCCM!
   - Using `project_id` guarantees that both CAPO and OCCM function correctly with `v3password` authentication.
+  Note that the scripts take care of determining the `project_id` as needed.
 
-  If the OpenStack API is secured with a certificate issued by a custom CA, include `--set cacert="$(cat /path/to/cacert)"` in your Helm command.
+  If the OpenStack API is secured with a certificate issued by a custom CA, include `--set cacert="$(cat /path/to/cacert)"` in your Helm command. (The scripts again handle this for you.)
   There is no need to update `clouds.yaml` with the custom CA, passing the `--set cacert=...` parameter is sufficient. 
   The openstack-csp-helper ensures that the CA certificate is available to both CAPO and OCCM.
 
@@ -377,19 +379,24 @@ per cluster in 07-cluster-secret.sh.)
   apiVersion: clusterstack.x-k8s.io/v1alpha1
   kind: ClusterStack
   metadata:
-    name: openstack
+    name: openstack-scs2-1-35
     namespace: cluster
+    labels:
+      clusterctl.cluster.x-k8s.io/move: "true"
   spec:
     provider: openstack
-    name: scs
-    kubernetesVersion: "1.32"
+    name: scs2
+    kubernetesVersion: "1.35"
     channel: custom
     autoSubscribe: false
     noProvider: true
     versions:
-      - v0-sha.lvlvyfw
+      - v0-git-d82c5c9
+      - v1
+      - v2
   EOF
   ```
+  Use `oras repo tags registry.scs.community/kaas/cluster-stacks` to get a list of available cluster stacks.
 
 - Check if ClusterClass exists ([06-wait-clusterclass.sh](https://github.com/SovereignCloudStack/scs-training-kaas-scripts/blob/main/06-wait-clusterclass.sh))
   ```bash
@@ -397,16 +404,26 @@ per cluster in 07-cluster-secret.sh.)
   ```
 
 - Check whether the image already exists in the OpenStack project or if the OpenStack Resource Controller (ORC) is currently uploading it
-- For demo purposes, it's a good idea to have the image uploaded in advance to avoid delays
+- For demo purposes, it's a good idea to have the image uploaded in advance to avoid delays. Use e.g. [imgreg.sh](https://github.com/garloff/openstack-scripts/blob/main/imgreg.sh) for this.
+- The automated image registration has a few disadvantages:
+    - Private images do not result in COW savings across projects
+    - Many redundant copies
+    - Can results in many minutes delay
+    - Is not tested regularly and is somewhat brittle
 
-- Note: Under normal conditions, cluster creation can proceed even if the image is not yet available. However, we observed a situation where the OpenStackServer resource entered an error state due to the not yet ready image, causing the cluster creation process to stacked.
-  Manually deleting the affected OpenStackServer resource and restarting the CAPO controller (`kubectl delete po -l control-plane=capo-controller-manager -n capo-system`) resolved the issue. Please be aware of this behavior, it requires further investigation.
+- Note: Under normal conditions, cluster creation can proceed even if the image is not yet available. However, we observed a situation where the OpenStackServer resource entered an error state due to the not yet ready image, causing the cluster creation process to become stuck. Manually deleting the affected OpenStackServer resource and restarting the CAPO controller (`kubectl delete po -l control-plane=capo-controller-manager -n capo-system`) resolved the issue. Please be aware of this behavior, it requires further investigation.
 
   ```bash
   kubectl get image -n cluster
   ```
 
-- New scripts only: Create per-cluster secret: [07-cluster-secret.sh](https://github.com/SovereignCloudStack/scs-training-kaas-scripts/blob/main/07-cluster-secret.sh)
+- With new scripts only: Create per-cluster secret: [07-cluster-secret.sh](https://github.com/SovereignCloudStack/scs-training-kaas-scripts/blob/main/07-cluster-secret.sh)
+    - Unlike the secret produced with 04-cloud-secret.sh which is used by capo to create resources for the cluster,
+      this one is available within the cluster and can be used by OCCM to create load-balancers or by Cinder-CSI
+      to create persistent volumes.
+    - Note that this secret can and depending on the roles should be different from the above secret, as the cluster-admin
+      of the cluster can see it and use it to talk to the OpenStack API with permissions associated with the credentials.
+      The script supports using and rotating application secrets for it, which is what we recommend.
 
 - Create cluster ([08-create-cluster.sh](https://github.com/SovereignCloudStack/scs-training-kaas-scripts/blob/main/08-create-cluster.sh))
 
@@ -429,13 +446,17 @@ per cluster in 07-cluster-secret.sh.)
         cidrBlocks:
         - "10.96.0.0/12"
     topology:
-      class: openstack-scs-1-32-v0-sha.lvlvyfw
+      class: openstack-scs2-1-35-v2
       controlPlane:
         replicas: 1
-      version: v1.32.1
+      version: v1.35.9
       # If you want to use octavia-ovn provider for Kubernetes API
       variables:
-        - name: apiserver_loadbalancer
+        - name: controlPlaneFlavor
+          value: "SCS-2V-4-20s"
+        - name: controlPlaneRootDisk
+          value: 0
+        - name: apiServerLoadBalancer
           value: "octavia-ovn"
       workers:
         machineDeployments:
@@ -467,6 +488,18 @@ per cluster in 07-cluster-secret.sh.)
   ```
 
   Get the IP address of the LB (from its status) and try to reach it, e.g. `curl <LB IP address>`
+
+- Run the k8s e2e tests with sonobuoy ([22-sonobuoy.sh](https://github.com/SovereignCloudStack/scs-training-kaas-scripts/blob/main/22-sonobuoy.sh)) and ([23-wait-sonobuoy.sh](https://github.com/SovereignCloudStack/scs-training-kaas-scripts/blob/main/23-wait-sonobuoy.sh))
+
+  ```bash
+  sonobuoy run --plugin-env=e2e.E2E_PROVIDER=openstack --e2e-parallel=true \
+  --e2e-skip="\[Disruptive\]|NoExecuteTaintManager|HostPort validates that there is no conflict between pods with same hostPort but different hostIP and protocol" \
+  --plugin-env "e2e.E2E_EXTRA_ARGS=--ginkgo.flake-attempts=2" #--mode=certified-conformance
+  ```
+  - You can query the status with `sonobuoy status` and get the results (after completion) with `sonobuoy retrieve`.
+    Note that even with `--e2eparallel=true`, sonobuoy takes 35-40mins on typical 3+3 clusters.
+  - You can delete the sonobuoy namespace for cleanup or reexecution of the test suite.
+  - You can run with `--e2efocus "NetworkPolicy" instead to run the k8s Network Policy tests.
 
 - Cleanup ([56-cleanup-cluster.sh](https://github.com/SovereignCloudStack/scs-training-kaas-scripts/blob/main/56-cleanup-cluster.sh) and [57-delete-cluster.sh](https://github.com/SovereignCloudStack/scs-training-kaas-scripts/blob/main/57-delete-cluster.sh))
 
@@ -538,25 +571,27 @@ per cluster in 07-cluster-secret.sh.)
           - 10.96.0.0/12
     topology:
       variables: # <-- variables can be set here
-        - name: controller_flavor
+        - name: controlPlaneFlavor
           value: "SCS-2V-4-20s"
-        - name: worker_flavor
-          value: "SCS-4V-16-50"
-        - name: external_id
+        - name: controlPlaneRootDisk
+          value: 0
+        - name: workerFlavor
+          value: "SCS-4V-16"
+        - name: networkExternalId
           value: "ebfe5546-f09f-4f42-ab54-094e457d42ec"
-      class: openstack-alpha-1-29-v2
+      class: openstack-scs2-1-35-v2
       controlPlane:
         replicas: 3
-      version: v1.29.3
+      version: v1.35.9
       workers:
         machineDeployments:
-          - class: openstack-alpha-1-29-v2
+          - class: openstack-scs2-1-35-v2
             failureDomain: nova
-            name: openstack-alpha-1-29-v2
+            name: openstack-scs2-1-35-v2
             replicas: 4
   ```
 
-For more details, see available variables [table](https://docs.scs.community/docs/container/components/cluster-stacks/components/cluster-stacks/providers/openstack/configuration#available-variables)
+For more details, see available variables in the [sources](https://github.com/SovereignCloudStack/cluster-stacks/blob/main/providers/openstack/scs2/cluster-class/templates/cluster-class.yaml), the [table in the docs](https://docs.scs.community/docs/container/components/cluster-stacks/components/cluster-stacks/providers/openstack/configuration#available-variables) unforuntately covers the old `openstack-scs` and not the current `openstack-scs2` cluster class.
 
 ### Finding out about Cluster-Stack releases from SCS
 
@@ -632,7 +667,7 @@ Create a new directory, e.g. `my-clusterstack`. Inside this directory create the
   ```yaml
   apiVersion: v2
   description: "This is my Cluster Stacks Cluster Class"
-  name: docker-my-cluster-class-1-32-cluster-class
+  name: docker-my-cluster-class-1-37-cluster-class
   type: application
   version: v1
   ```
@@ -643,7 +678,7 @@ Create a new directory, e.g. `my-clusterstack`. Inside this directory create the
   clusterctl init --infrastructure docker
   cd templates
   clusterctl generate cluster my-cluster --infrastructure docker --flavor development \
-    --kubernetes-version v1.32.0 --control-plane-machine-count=3 --worker-machine-count=3 \
+    --kubernetes-version v1.37.0 --control-plane-machine-count=3 --worker-machine-count=3 \
     > my-cluster.yaml
   ```
 
@@ -697,7 +732,7 @@ Create a new directory, e.g. `my-clusterstack`. Inside this directory create the
     - alias: cilium
       name: cilium
       repository: https://helm.cilium.io/
-      version: 1.17.2
+      version: 1.20.3
   ```
 
 - Build dependencies
@@ -738,7 +773,7 @@ Create a new directory, e.g. `my-clusterstack`. Inside this directory create the
   ```yaml
   apiVersion: csctl.clusterstack.x-k8s.io/v1alpha1
   config:
-    kubernetesVersion: v1.32.0
+    kubernetesVersion: v1.37.0
     clusterStackName: my-clusterstack
     provider:
       type: docker
@@ -757,7 +792,7 @@ Create a new directory, e.g. `my-clusterstack`. Inside this directory create the
   	cluster-addons/
   		cni/
   			charts/
-  				cilium-1.16.6.tgz
+				cilium-1.20.3.tgz
   			 Chart.yaml
   	clusteraddons.yaml
   	csctl.yaml
