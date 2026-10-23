@@ -66,7 +66,7 @@ The SCS Monitoring Platform supports multi-cluster monitoring, enabling the obse
 ### IAAS Monitoring
 ![IaaS Monitoring](images/iaas.png){width=480}
 
-IaaS monitoring uses openstack exporter. The user needs to supply credentials in form of `clouds.yaml` Currently, there's no dNation dashboard, we recommend to use [this dashboard](https://grafana.com/grafana/dashboards/21085-openstack-overview/). See [Dashboards and Customization](#dashboards-and-customisation) on how to add 3rd party dashboards.
+IaaS monitoring uses openstack exporter. The user needs to supply credentials in form of `clouds.yaml` Currently, there's no dNation dashboard, we recommend to use [this dashboard](https://grafana.com/grafana/dashboards/21085-openstack-overview/). See [Dashboards and Customization](#dashboards-and-customization) on how to add 3rd party dashboards.
 
 ## Example Deployments
 This section provides example deployments of single-cluster, multi-cluster and IAAS monitoring using [KinD](https://kind.sigs.k8s.io/)
