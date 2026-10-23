@@ -31,6 +31,8 @@ SEARCHDIRS = Virtualization:clusterstacks:monitoring:registry:Introduction
 TARGET = SCS-Training-Trad.pdf
 TFONT = tgschola
 TARGETLUA = SCS-Training.pdf
+TARGETODT = SCS-Training.odt
+TARGETDOCX = SCS-Training.docx
 LFONT = "Lato"
 
 default: $(TARGETLUA)
@@ -42,6 +44,12 @@ $(TARGET): $(ALLINPUTS) Makefile
 
 $(TARGETLUA): $(ALLINPUTS) Makefile
 	pandoc -V geometry:a4paper,margin=24mm -V mainfont=$(LFONT) --pdf-engine=lualatex --resource-path=$(SEARCHDIRS) -r markdown -w pdf -o $@ $(ALLINPUTS)
+
+$(TARGETODT): $(ALLINPUTS) Makefile
+	pandoc -V geometry:a4paper,margin=24mm -V mainfont=$(LFONT) --resource-path=$(SEARCHDIRS) -r markdown -w odt -o $@ $(ALLINPUTS)
+
+$(TARGETDOCX): $(ALLINPUTS) Makefile
+	pandoc -V geometry:a4paper,margin=24mm -V mainfont=$(LFONT) --resource-path=$(SEARCHDIRS) -r markdown -w docx -o $@ $(ALLINPUTS)
 
 clean:
 	rm -f $(TARGET) $(TARGETLUA)
