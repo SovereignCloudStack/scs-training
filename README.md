@@ -47,17 +47,6 @@ the authors can not take any responsibility for damage that may
 occur from incomplete or wrong information in this material.
 Any liability is excluded to the maximum extent permitted by law.
 
-## Requirements
-
-- [pandoc](https://pandoc.org/installing.html)
-- A TeX distribution with LuaLaTeX, such as TeX Live or BasicTeX. Minimal install also need these packages:
-
-  ```bash
-    tlmgr install lualatex-math titlesec pmboxdraw newunicodechar
-  ```
-
-- The [Lato](https://fonts.google.com/specimen/Lato) font, installed system-wide
-
 ## Usage
 Making this material freely available has the advantage and downside that any 
 company can use it and offer trainings based on this material. A good training
@@ -78,6 +67,17 @@ abuse. Please report any copyright violation to the ITU and <s7n@garloff.de>.
 ## PDF
 The `Makefile` allows you to build a nicely formatted PDF using PanDoc
 and LuaLaTeX. Find it also on SCS' nextcloud.
+
+### Requirements
+
+- [pandoc](https://pandoc.org/installing.html)
+- A TeX distribution with LuaLaTeX, such as TeX Live or BasicTeX. Minimal install also need these packages:
+
+  ```bash
+    tlmgr install lualatex-math titlesec pmboxdraw newunicodechar
+  ```
+
+- The [Lato](https://fonts.google.com/specimen/Lato) font, installed system-wide
 
 ## Table of Contents
 ### [Introduction](Introduction/)
