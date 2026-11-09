@@ -189,6 +189,8 @@ DELETE FROM `volumes` WHERE deleted = 1 and deleted_at < "2025-05-01 00:00:00";
 ### OpenStack Resource Manager
 Some of the repeating cleanup work has been automated in OSISM's
 [OpenStack Resource Manager](https://github.com/osism/openstack-resource-manager).
+Slightly better usability (supporting `OS_CLOUD` and direct execution) is available in this
+[fork](https://github.com/garloff/openstack-resource-manager).
 A short [documentation](https://osism.tech/docs/guides/operations-guide/openstack/tools/resource-manager/)
 is available.
 
