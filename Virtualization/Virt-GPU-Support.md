@@ -46,6 +46,8 @@ without partitioning (MIG/SR-IOV) and the rest of this chapter assumes pci pass-
     - Some mainboards need to also enable ACS (Access Control Services) to
       group PCI devices in separate IOMMU domains, so the GPU can be isolated
       in its own PCI domain.
+    - You may find terms like VT-d for intel or AMD-Vi for AMD in the BIOS rather
+      than IOMMU.
 * Pass `amd_iommu_amd=1` or `intel_iommu_=1` and `iommu-pt` to the kernel
   command line (typically in grub configuration).
 * We need to avoid a GPU driver on the host attaching to the GPU,
@@ -56,13 +58,16 @@ without partitioning (MIG/SR-IOV) and the rest of this chapter assumes pci pass-
   from `lspci -nn`. Note that modern GPUs may consist of several PCI devices,
   e.g. an audio device along with the graphics device. It is least confusing
   to VM drivers if the deives are passed-through together, so reserve them
-  all.
+  all. You can also create a file in `/etc/modprobe.d/50-vfio.conf` and
+  pass the options there `options vfio-pci ids=1002:744c,1002:ab30` and
+  regenerate your initrd.
     - You can unbind a driver at runtime by invoking the right unbind
       command in sysfs, so this can be done without rebooting (unlike
       IOMMU enablement).
     - `lspci -k` shows what kernel drivers have attached to the hardware.
 * In libvirt, we'd reference a GPU on pci 03:00.0 and 03:00.1 so:
 ```xml
+    <!-- PCI Pass Through for host 03:00.0 and 03:00.1 as guest 05:00.0 and 06:00.0 -->
     <hostdev mode='subsystem' type='pci' managed='yes'>
       <source>
         <address domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
@@ -79,7 +84,7 @@ without partitioning (MIG/SR-IOV) and the rest of this chapter assumes pci pass-
 * Note that AMD GPUs need atomic completion, which does not work if you
   pass an audio device belonging to the GPU as a function of a multi-function
   device, even if this the topology on the host.
-* See below for OpenStack.
+* You will not do this manually in libvirt, see below for OpenStack.
 
 ## Host aggregates with GPUs
 * We'll define flavors which will require a the GPU.
@@ -108,8 +113,14 @@ without partitioning (MIG/SR-IOV) and the rest of this chapter assumes pci pass-
 * Flavor creation
 
 ## Validation and testing
-* `openstack resource provider list`
-  `for host in ...; do openstack resource provider ... show ; done`
+* See reported capacity
+```shell
+openstack resource provider list
+for host in iUUID1 UUID2 ... ; do
+    echo $host
+    openstack resource provider inventory list $host
+done
+```
 * Start VM using the flavor.
 * `lspci -k` should show the GPU and a driver attached to it.
 
