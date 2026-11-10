@@ -51,6 +51,8 @@ partitioning (MIG/SR-IOV) and the rest of this chapter assumes PCI-Pass-Through.
 * Pass `amd_iommu_amd=1` or `intel_iommu=1` and `iommu=pt` (for both) to the
   kernel command line (typically in grub configuration), depending on the CPU
   vendor.
+    - You may find terms like VT-d for intel or AMD-Vi for AMD in the BIOS rather
+      than IOMMU.
 * We need to avoid a GPU driver on the host attaching to the GPU,
   which would prevent it from being passed through.
 * Instead the the vfio-pci needs to take ownership so it can be handed out
@@ -58,14 +60,17 @@ partitioning (MIG/SR-IOV) and the rest of this chapter assumes PCI-Pass-Through.
   `vfio-pci.ids=10de:1b81,10de:10f0` (replace this with the real PCI IDs
   from `lspci -nn`. Note that modern GPUs may consist of several PCI devices,
   e.g. an audio device along with the graphics device. It is least confusing
-  to VM drivers if the devices are passed-through together, so reserve them
-  all.
+  to VM drivers if the deives are passed-through together, so reserve them
+  all. You can also create a file in `/etc/modprobe.d/50-vfio.conf` and
+  pass the options there `options vfio-pci ids=1002:744c,1002:ab30` and
+  regenerate your initrd.
     - You can unbind a driver at runtime by invoking the right unbind
       command in sysfs, so this can be done without rebooting (unlike
       IOMMU enablement).
     - `lspci -k` shows what kernel drivers have attached to the hardware.
 * In libvirt, we'd reference a GPU on pci 03:00.0 and 03:00.1 so:
 ```xml
+    <!-- PCI Pass Through for host 03:00.0 and 03:00.1 as guest 05:00.0 and 06:00.0 -->
     <hostdev mode='subsystem' type='pci' managed='yes'>
       <source>
         <address domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
@@ -233,9 +238,15 @@ partitioning (MIG/SR-IOV) and the rest of this chapter assumes PCI-Pass-Through.
         state: present
 ```
 
-### Validation and testing
-* `openstack resource provider list`
-  `for host in ...; do openstack resource provider $host show ; done`
+## Validation and testing
+* See reported capacity
+```shell
+openstack resource provider list
+for host in UUID1 UUID2 ... ; do
+    echo $host
+    openstack resource provider inventory list $host
+done
+```
 * Start VM using the flavor.
 * `lspci -k` should show the GPU and the driver attached to it.
 
