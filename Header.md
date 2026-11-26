@@ -19,9 +19,9 @@ thanks: |
 copyright: ITU
 date: | 
   v1.6.1  
-  2026-11-26
-  <br/><br/>  
-  ![SCS logo](scs-bw.png){width=200}
+  2026-11-26  
+  \vspace{2cm}
+  \includegraphics[width=6cm]{scs-bw.png}
 license: CC-BY-SA-4.0
 documentclass: book
 toc: true
@@ -47,7 +47,7 @@ header-includes:
   - \pagestyle{fancy}
   - \fancyhead[LE,RO]{\small\slshape\rightmark}
   - \fancyhead[RE,LO]{\small\slshape\leftmark}
-  - \fancyfoot[CO,CE]{\small\emph{SCS training docs (c) 2025 ITU, S7n, CC-BY-SA-4.0}}
+  - \fancyfoot[CO,CE]{\small\emph{SCS training docs (c) 2024-2026 ITU, S7n, CC-BY-SA-4.0}}
   - \fancyfoot[LE,RO]{\thepage}
   - \renewenvironment{Shaded}{\small}{}
 ---
