@@ -15,7 +15,7 @@
     - As admin, you can ask openstack about deleted servers -- beware, the list may be huge.
         * I have not found a good way to tell `openstack` to sort by deletion time, so you might need to retrieve the complete list and then start by looking at the bottom of the list
 ```bash
-# Getting 100 old deleted serversi (the `tr -d` is for CiaB container extra CR)
+# Getting 100 old deleted servers (the `tr -d` is for CiaB container extra CR)
 DELETED=$(openstack server list --all --deleted -c ID -f value | tr -d '\r')
 ```
 * You can use `nova-manage` to move out old entries to shadow tables (for later deletion)
@@ -90,6 +90,7 @@ DELETE FROM `volumes` WHERE deleted = 1 and deleted_at < "2025-05-01 00:00:00";
         * Be very careful!
     - If they're not gone yet, you may need to remove them from the database as well
 * Charging customers for unusable volume may not create enthusiastic responses
+* OpenStack Resource Manager (see below) has code to address this
 
 ### Stuck LoadBalancers
 * Loadbalancers can get stuck in `PENDING_CREATE` or `PENDING_DELETE`.
@@ -98,7 +99,10 @@ DELETE FROM `volumes` WHERE deleted = 1 and deleted_at < "2025-05-01 00:00:00";
     - Fortunately, the ovn provider does not expose this bad behavior much
 * These can not be cleaned up by the user
 * There is no CLI command the author is aware of for the admin to set them to error or to delete them
-* The solution is to go in the database :-( and set them to error for deletion
+* The normal solution is to force an amphora failover (as admin)
+    `openstack loadbalancer failover LBID`
+    - OpenStack Resource Manager (see below) has code for this
+    - If this fails, the solution is to go in the database :-( and set them to error for deletion
 * Charging customers for stuck loadbalancers may not create enthusiastic responses, so avoid it
 * Known bug in octavia Loadbalancer (affecting ovn provider): The `octavia_api` container leaks file descriptors.
     - See <https://github.com/osism/issues/issues/959>
@@ -107,11 +111,27 @@ DELETE FROM `volumes` WHERE deleted = 1 and deleted_at < "2025-05-01 00:00:00";
 * There is [documentation on Octavia maintenance](https://osism.tech/docs/guides/operations-guide/openstack/octavia)
   on how to deal with missing database entries.
 
+### OpenStack Resource Manager
+Some of the repeating cleanup work has been automated in OSISM's
+[OpenStack Resource Manager](https://github.com/osism/openstack-resource-manager).
+A short [documentation](https://osism.tech/docs/guides/operations-guide/openstack/tools/resource-manager/)
+is available.
+
+In particular it has tooling for:
+
+* Host evacuation and live migration
+* Amphorae rotation
+* Detecting and cleaning up stuck cinder volumes
+* Identifying orphaned resources, i.e. resources that belong to projects which no longer exist
+
 ### RabbitMQ issues
 * If your rabbitMQ process is starved of resources, it might fail to deliver all messages
+    - rabbitmq-4 (default since OSISM-10) with quorum queues significantly improved the situation
 * Subscribers can lose connections to rabbitMQ
 * The result is that the backend actions are not taken and while the API services may happily accept requests, the requested actions never make any progress
 * See the [Cinder volume create failure](https://osism.tech/docs/guides/troubleshooting-guide/openstack#cinder-volume-create-failure) guide to see how to detect cinder-rabbit issues.
+* designate it is known to occasionally lose its connection to rabbitmq
+    - Restart `designate_worker`, `designate_producer`, `designate_central` containers to address this
 <!--TODO: More information here?-->
 
 ### Power loss on storage
@@ -155,13 +175,13 @@ DELETE FROM `volumes` WHERE deleted = 1 and deleted_at < "2025-05-01 00:00:00";
 * Beyond the ceph locks, you might find containers not coming up after a surprise shutdown.
 * Use `docker ps --all | grep '\(Exited\|unhealthy\|starting\)'` to see which containers are not
   running as they should. (The `starting` state is of course OK for some minutes after restart.)
+    - `osism validate container-status` does this for you
 * Typically a `docker restart containerID` won't help, but trying does not hurt.
 * `docker logs containerID` might give you a first idea what's wrong.
 * This can be done on the manager host but also on the other hosts.
 * Please be aware that this repair work is a deviation from normal operations and should be done
   with extra care, oversight (4 eyes), back-ups. Consider to save state instead and rebuild affected
   hosts cleanly.
-
 
 ### Recovery of redis store
 * For redis containers, your issue might be that the last written record to the aof file got corrupted.
@@ -185,19 +205,6 @@ DELETE FROM `volumes` WHERE deleted = 1 and deleted_at < "2025-05-01 00:00:00";
   may be used as a reminder how to find out users with `member` access to a project.
 * See [Upstream Neutron QoS Settings](https://docs.openstack.org/neutron/latest/admin/config-qos.html)
   documentation how to control the usage of network bandwidth in your infrastructure.
-
-### OpenStack Resource Manager
-Some of the repeating cleanup work has been automated in OSISM's
-[OpenStack Resource Manager](https://github.com/osism/openstack-resource-manager).
-A short [documentation](https://osism.tech/docs/guides/operations-guide/openstack/tools/resource-manager/)
-is available.
-
-In particular it has tooling for:
-
-* Host evacuation and live migration
-* Amphorae rotation
-* Detecting and cleaning up stuck cinder volumes
-* Identifying orphaned resources, i.e. resources that belong to projects which no longer exist
 
 ### Troubleshooting Guide
 There is a [Troubleshooting Guide](https://osism.tech/docs/guides/troubleshooting-guide/)

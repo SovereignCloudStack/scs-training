@@ -44,6 +44,7 @@
     * ARA
     * Smoke tests
 * [The OSISM tool](Kolla-OSISM.md#the-osism-tool)
+* [Custom playbooks](Kolla-OSISM.md#custom-playbooks)
 * [Practical assignments](Kolla-OSISM.md#practical-assignments-for-osism)
     * Create a config repository
     * Bootstrap and install manager

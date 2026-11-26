@@ -353,11 +353,11 @@ References: <https://osism.tech/docs/guides/deploy-guide/seed>, <https://osism.t
 | .	                | `migration_interface` | ✓ | Nova live migration (possibly move to VM2VM) |
 | .                 | `dns_interface`     |  ✓  | designate |
 | .                 | `octavia_network_interface` | ✓ | LoadBalancer |
-| ExtApi, `___`     | `kolla_external_vip_interface` | * | External API (`kolla_external_vip_address`, `kolla_external_fqdn`), can be co-located with Ctrl if needed |
-| VM2VM, `___`      | `tunnel_interface`  |  -  | Geneve east-west traffic |
-| Ext, `___`        | `neutron_external_interface` | - | FIP provider network (north-south), no *host* IPs |
-| Ceph, `___`       | `storage_interface` | (✓) | Ceph (Front and replication) |
-| .                 | `cluster_interface` | (✓) | ditto
+| ExtApi, `___`     | `kolla_external_vip_interface` | * | External API (`kolla_external_vip_address`, `kolla_external_fqdn`), can be co-located with Ctrl |
+| VM2VM, `___`      | `tunnel_interface`  |  -  | Geneve east-west traffic (ovs: `br-int`) |
+| Ext, `___`        | `neutron_external_interface` | - | FIP provider network (north-south), no *host* IPs (ovs: `br-ex`) |
+| Ceph, `___`       | `storage_interface` | (✓) | Ceph (Frontend) |
+| .                 | `cluster_interface` | (✓) | Ceph (replication) |
 
 References: <https://docs.openstack.org/kolla-ansible/latest/admin/production-architecture-guide.html>, <https://docs.openstack.org/kolla-ansible/latest/admin/advanced-configuration.html>
 
@@ -607,7 +607,7 @@ build_failure_weight_multiplier = 2.0
 #host_subset_size = 2
 ```
 
-This avoids a sind build failure to take the host out of scheduling
+This avoids a single build failure to take the host out of scheduling
 (until nova-compute is restarted or the cloud runs out of capacity
 or other hosts fail as well).
 
@@ -639,6 +639,20 @@ space and drastically reduces the time until booting of a created instance
 starts. Writes to the disk however cause a read-modify-write cycle with
 the `rbd_chunk_size`. Using 4MB (compared to the 8MB defaults) does so on
 smaller blocks.
+
+#### Multi-Domain horizon login We recommend to use multiple domains, so
+customers can have mutiple projects and have more self-service capabilities for
+user/group management.
+
+To enable customers with non-default domains to login, we need to tell horizon
+to ask for a domain name:
+
+`/environments/kolla/configuration.yaml`:
+```yaml
+horizon_keystone_multidomain: true
+```
+`osism apply horizon`
+
 
 ### Validating that the installed environment works
 
@@ -750,6 +764,44 @@ smaller blocks.
     - Take reviews seriously!
         * Be mindful of hierarchies or cultural habits that e.g. prevent questioning higher ranked people
         * Think a moment about AF447 or Fukushima
+
+### Custom playbooks
+
+* You can add playbooks to an environment and add them to your rollout script
+    - Put them into `/opt/configuration/environments/XXX/playbook-name.yml`
+    - Apply with `osism apply -e XXX name`
+
+#### Example playbook for creation of provider network for floating IPs
+
+`environments/openstack/playbook-providernet.yml`:
+```yaml
+  tasks:
+    - name: Create public network
+      openstack.cloud.network:
+        cloud: admin
+        state: present
+        name: public
+        external: true
+        provider_network_type: flat
+        provider_physical_network: physnet1
+
+    - name: Create public subnet
+      openstack.cloud.subnet:
+        cloud: admin
+        state: present
+        name: subnet-public
+        network_name: public
+        cidr: 10.83.41.0/24
+        enable_dhcp: false
+        allocation_pool_start: 10.83.41.2
+        allocation_pool_end: 10.83.41.254
+        gateway_ip: 10.83.41.1
+        dns_nameservers:
+          - X.X.X.53
+          - [...]
+```
+
+Apply with `osism apply --environment openstack providernet`
 
 ### Practical assignments for OSISM
 

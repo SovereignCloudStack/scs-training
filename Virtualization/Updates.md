@@ -44,6 +44,7 @@
     - Ensure proper error handling when host evacuation fails
     - Announcing this to customers beforehand (as a time of higher risk / lower performance) will be appreciated
 * See the hints how to take out and evacuate a compute node in the [operations guide](https://osism.tech/docs/guides/operations-guide/node/package-upgrades)
+* The OpenStack Resource Manager (see Maintenance section) has code to automate this.
 
 ### Version upgrades
 * The SCS reference implementation has a new release twice a year (to follow upstream OpenStack releases)
@@ -55,6 +56,7 @@
 * There is an [Upgrade Guide](https://osism.tech/docs/guides/upgrade-guide/) that you should
   read and study. The below information is just to provide an overview.
     - If you are upgrading to a new OSISM release, please also read the version-specific release notes.
+    - You may jump over *minor* versions, but you need to follow all release notes, incl. the skipped ones.
 * Typical sequence:
     - Update the OSISM manager node `osism update manager`
     - Update docker, traefik, netbox `osism update ...` and ensure the facts are in sync (`osism reconciler sync; osism apply facts`).
@@ -86,6 +88,9 @@
     - Clean up unneeded containers: `osism apply cleanup-docker-images -e ireallymeanit=yes`
 * It is highly recommended to script the upgrade and test this in your reference/preproduction environment extensively.
     - You may use the the [testbed scripts](https://github.com/osism/testbed/tree/main/scripts) as template.
+    - The `set -e` in there is a good idea -- you want to stop on the first failure.
+* Do practice upgrades (including roll-backs) on test/dev and reference environments before attacking production.
+    - Testbed installations are a good start for test/dev.
 
 ### Adding and removing compute nodes
 * Removing:
